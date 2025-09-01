@@ -1,4 +1,4 @@
-package com.ase.userservice.controller;
+package com.ase.userservice.controllers;
 
 public class InvalidDateRangeException extends RuntimeException {
     public InvalidDateRangeException() {

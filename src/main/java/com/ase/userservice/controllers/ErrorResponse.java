@@ -1,3 +1,3 @@
-package com.ase.userservice.controller;
+package com.ase.userservice.controllers;
 
 public record ErrorResponse(String message) {}
