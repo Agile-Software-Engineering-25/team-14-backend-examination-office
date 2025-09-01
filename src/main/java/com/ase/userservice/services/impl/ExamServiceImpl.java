@@ -1,17 +1,16 @@
 package com.ase.userservice.services.impl;
 
 import com.ase.userservice.entities.Exam;
-import com.ase.userservice.entities.ExamType;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.services.ExamService;
 import com.ase.userservice.services.dto.ExamDto;
 import com.ase.userservice.services.dto.ExamFilter;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 
 @Service
@@ -32,7 +31,9 @@ public class ExamServiceImpl implements ExamService {
                 var like = "%" + q.toLowerCase() + "%";
                 predicates.add(cb.or(
                         cb.like(cb.lower(root.get("title")), like),
-                        cb.like(cb.lower(root.get("moduleCode")), like)
+                        cb.like(cb.lower(root.get("moduleCode")), like),
+                        cb.like(cb.lower(root.get("room")), like),
+                        cb.like(cb.lower(root.get("semester")), like)
                 ));
             });
 
@@ -45,7 +46,7 @@ public class ExamServiceImpl implements ExamService {
             );
 
             f.examType().ifPresent(et ->
-                    predicates.add(cb.equal(root.get("examType"), ExamType.valueOf(et)))
+                    predicates.add(cb.equal(root.get("examType"), et))
             );
 
             f.semester().ifPresent(s ->

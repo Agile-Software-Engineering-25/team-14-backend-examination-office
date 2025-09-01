@@ -1,5 +1,6 @@
 package com.ase.userservice.services.dto;
 
+import com.ase.userservice.entities.ExamType;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -9,6 +10,6 @@ public record ExamFilter(
         Optional<LocalDate> examDateFrom,
         Optional<LocalDate> examDateTo,
         Optional<String> room,
-        Optional<String> examType,
+        Optional<ExamType> examType,
         Optional<String> semester
 ) {}

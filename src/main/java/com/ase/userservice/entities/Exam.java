@@ -24,11 +24,10 @@ public class Exam {
 
     private String semester;
 
-    // --- getters/setters, no-arg ctor ---
-
     public Exam() {}
 
-    public Exam(Long id, String title, String moduleCode, LocalDate examDate, String room, ExamType examType, String semester) {
+    public Exam(Long id, String title, String moduleCode, LocalDate examDate,
+                String room, ExamType examType, String semester) {
         this.id = id;
         this.title = title;
         this.moduleCode = moduleCode;
