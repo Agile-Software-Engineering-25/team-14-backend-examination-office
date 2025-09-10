@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/exams")
@@ -33,5 +34,17 @@ public class ExamController {
   public ResponseEntity<ExamResponse> updateExam(@PathVariable Long id,
                                                  @Valid @RequestBody CreateExamRequest req) {
     return ResponseEntity.ok(service.update(id, req));
+  }
+
+  @GetMapping("/{id}")
+  @PreAuthorize("hasAuthority('exam:read') or hasAuthority('ROLE_ADMIN')")
+  public ResponseEntity<ExamResponse> getExam(@PathVariable Long id) {
+    return ResponseEntity.ok(service.get(id));
+  }
+
+  @GetMapping
+  @PreAuthorize("hasAuthority('exam:read') or hasAuthority('ROLE_ADMIN')")
+  public ResponseEntity<List<ExamResponse>> listExams() {
+    return ResponseEntity.ok(service.list());
   }
 }

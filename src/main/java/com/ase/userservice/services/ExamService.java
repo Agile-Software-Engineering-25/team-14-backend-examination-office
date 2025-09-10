@@ -7,6 +7,7 @@ import com.ase.userservice.entities.Exam;
 import com.ase.userservice.repositories.ExamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class ExamService {
@@ -87,5 +88,17 @@ public class ExamService {
       e.isFileUploadRequired(),
       e.getTools()
     );
+  }
+
+  @Transactional(readOnly = true)
+  public ExamResponse get(Long id) {
+    var exam = repo.findById(id)
+        .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
+    return toResponse(exam);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ExamResponse> list() {
+    return repo.findAll().stream().map(ExamService::toResponse).toList();
   }
 }
