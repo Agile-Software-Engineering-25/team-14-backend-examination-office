@@ -8,6 +8,10 @@ import java.time.LocalDate;
 
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, Long> {
-  boolean existsByTitleAndDate(String title, LocalDate date);
-  boolean existsByTitleAndDateAndIdNot(String title, LocalDate date, Long id);
+
+  boolean existsByModuleCodeAndExamDateAndAttemptNumber(
+      String moduleCode, LocalDate examDate, Integer attemptNumber);
+
+  boolean existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(
+      String moduleCode, LocalDate examDate, Integer attemptNumber, Long id);
 }

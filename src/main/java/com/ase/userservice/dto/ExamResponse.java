@@ -1,18 +1,20 @@
 package com.ase.userservice.dto;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.util.List;
 
 public record ExamResponse(
   Long id,
   String title,
   String moduleCode,
-  LocalDate date,
-  LocalTime startTime,
-  LocalTime endTime,
-  String examiner,
+  LocalDate examDate,
   String room,
-  Integer capacity,
+  String examType,
+  String semester,
   Integer ects,
-  LocalDate registrationDeadline,
-  LocalDate deregistrationDeadline
+  Integer maxPoints,
+  Integer duration,
+  Integer attemptNumber,
+  boolean fileUploadRequired,
+  List<String> tools
 ) {}

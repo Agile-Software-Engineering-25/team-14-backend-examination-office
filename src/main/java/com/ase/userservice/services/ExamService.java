@@ -1,10 +1,10 @@
 package com.ase.userservice.services;
 
+import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.CreateExamRequest;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.repositories.ExamRepository;
-import com.ase.userservice.controllers.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,16 +19,28 @@ public class ExamService {
   @Transactional
   public ExamResponse create(CreateExamRequest req) {
     req.validateBusinessRules();
-    if (repo.existsByTitleAndDate(req.title(), req.date())) {
-      throw new IllegalStateException("Exam with same title and date already exists");
+
+    if (repo.existsByModuleCodeAndExamDateAndAttemptNumber(
+        req.moduleCode(), req.examDate(), req.attemptNumber())) {
+      throw new IllegalStateException("Exam with same moduleCode, examDate and attemptNumber already exists");
     }
+
     Exam exam = new Exam(
-      req.title(), req.moduleCode(), req.date(), req.startTime(), req.endTime(),
-      req.examiner(), req.room(), req.capacity(), req.ects(),
-      req.registrationDeadline(), req.deregistrationDeadline()
+      req.title(),
+      req.moduleCode(),
+      req.examDate(),
+      req.room(),
+      req.examType(),
+      req.semester(),
+      req.ects(),
+      req.maxPoints(),
+      req.duration(),
+      req.attemptNumber(),
+      req.fileUploadRequired(),
+      req.tools()
     );
-    Exam saved = repo.save(exam);
-    return toResponse(saved);
+
+    return toResponse(repo.save(exam));
   }
 
   @Transactional
@@ -38,34 +50,42 @@ public class ExamService {
     Exam exam = repo.findById(id)
       .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
 
-    // Duplikate verhindern (außer beim gleichen Datensatz)
-    if (repo.existsByTitleAndDateAndIdNot(req.title(), req.date(), id)) {
-      throw new IllegalStateException("Exam with same title and date already exists");
+    if (repo.existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(
+        req.moduleCode(), req.examDate(), req.attemptNumber(), id)) {
+      throw new IllegalStateException("Exam with same moduleCode, examDate and attemptNumber already exists");
     }
 
-    // Felder 1:1 wie bei Erstellung
     exam.setTitle(req.title());
     exam.setModuleCode(req.moduleCode());
-    exam.setDate(req.date());
-    exam.setStartTime(req.startTime());
-    exam.setEndTime(req.endTime());
-    exam.setExaminer(req.examiner());
+    exam.setExamDate(req.examDate());
     exam.setRoom(req.room());
-    exam.setCapacity(req.capacity());
+    exam.setExamType(req.examType());
+    exam.setSemester(req.semester());
     exam.setEcts(req.ects());
-    exam.setRegistrationDeadline(req.registrationDeadline());
-    exam.setDeregistrationDeadline(req.deregistrationDeadline());
+    exam.setMaxPoints(req.maxPoints());
+    exam.setDuration(req.duration());
+    exam.setAttemptNumber(req.attemptNumber());
+    exam.setFileUploadRequired(req.fileUploadRequired());
+    exam.setTools(req.tools());
 
-    // exam ist gemanagt; speichern nicht zwingend nötig, aber explizit ist okay:
-    Exam saved = repo.save(exam);
-    return toResponse(saved);
+    return toResponse(repo.save(exam));
   }
 
   public static ExamResponse toResponse(Exam e) {
     return new ExamResponse(
-      e.getId(), e.getTitle(), e.getModuleCode(), e.getDate(),
-      e.getStartTime(), e.getEndTime(), e.getExaminer(), e.getRoom(),
-      e.getCapacity(), e.getEcts(), e.getRegistrationDeadline(), e.getDeregistrationDeadline()
+      e.getId(),
+      e.getTitle(),
+      e.getModuleCode(),
+      e.getExamDate(),
+      e.getRoom(),
+      e.getExamType(),
+      e.getSemester(),
+      e.getEcts(),
+      e.getMaxPoints(),
+      e.getDuration(),
+      e.getAttemptNumber(),
+      e.isFileUploadRequired(),
+      e.getTools()
     );
   }
 }

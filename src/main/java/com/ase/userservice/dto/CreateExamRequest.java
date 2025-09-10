@@ -1,30 +1,28 @@
 package com.ase.userservice.dto;
 
 import jakarta.validation.constraints.*;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Duration;
+import java.util.List;
 
 public record CreateExamRequest(
-  @NotBlank(message = "title is required") String title,
-  @NotBlank(message = "moduleCode is required") String moduleCode,
-  @NotNull LocalDate date,
-  @NotNull LocalTime startTime,
-  @NotNull LocalTime endTime,
-  @NotBlank String examiner,
-  String room,
-  @NotNull @Positive Integer capacity,
-  @PositiveOrZero Integer ects,
-  @NotNull LocalDate registrationDeadline,
-  @NotNull LocalDate deregistrationDeadline
+  @NotBlank String title,
+  @NotBlank String moduleCode,
+  @NotNull LocalDate examDate,
+  @NotBlank String room,
+  @NotBlank String examType,
+  @NotBlank String semester,
+  @NotNull @PositiveOrZero Integer ects,
+  @NotNull @Positive Integer maxPoints,
+  @NotNull @Positive Integer duration,       // Minuten
+  @NotNull @Positive Integer attemptNumber,  // 1..n
+  boolean fileUploadRequired,
+  @NotNull @Size(max = 20) List<@NotBlank String> tools
 ) {
   public void validateBusinessRules() {
-    if (endTime != null && startTime != null && !endTime.isAfter(startTime)) {
-      throw new IllegalArgumentException("endTime must be after startTime");
-    }
-    if (registrationDeadline != null && date != null && registrationDeadline.isAfter(date)) {
-      throw new IllegalArgumentException("registrationDeadline must be on/before date");
-    }
-    if (deregistrationDeadline != null && registrationDeadline != null && deregistrationDeadline.isBefore(registrationDeadline)) {
-      throw new IllegalArgumentException("deregistrationDeadline must be on/after registrationDeadline");
+    if (tools != null && tools.stream().anyMatch(s -> s == null || s.isBlank())) {
+      throw new IllegalArgumentException("tools must not contain blank items");
     }
   }
 }
