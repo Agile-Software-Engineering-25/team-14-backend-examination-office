@@ -74,16 +74,6 @@
           <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Security + JWT (für @PreAuthorize & Resource Server) -->
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
-
         <!-- Bean Validation (jakarta.validation.*) -->
         <dependency>
           <groupId>org.springframework.boot</groupId>
