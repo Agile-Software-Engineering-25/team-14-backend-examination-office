@@ -101,4 +101,9 @@ public class ExamService {
   public List<ExamResponse> list() {
     return repo.findAll().stream().map(ExamService::toResponse).toList();
   }
+
+  @Transactional
+  public void delete(Long id) {
+    repo.deleteById(id);
+  }
 }

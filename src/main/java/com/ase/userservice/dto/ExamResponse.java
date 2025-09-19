@@ -1,13 +1,13 @@
 package com.ase.userservice.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record ExamResponse(
   Long id,
   String title,
   String moduleCode,
-  LocalDate examDate,
+  LocalDateTime examDate,
   String room,
   String examType,
   String semester,

@@ -1,7 +1,7 @@
 package com.ase.userservice.entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class Exam {
   private String moduleCode;
 
   @Column(name = "exam_date", nullable = false)
-  private LocalDate examDate;
+  private LocalDateTime examDate;
 
   @Column(nullable = false, length = 80)
   private String room;
@@ -58,7 +58,7 @@ public class Exam {
 
   protected Exam() {}
 
-  public Exam(String title, String moduleCode, LocalDate examDate, String room, String examType,
+  public Exam(String title, String moduleCode, LocalDateTime examDate, String room, String examType,
               String semester, Integer ects, Integer maxPoints, Integer duration,
               Integer attemptNumber, boolean fileUploadRequired, List<String> tools) {
     this.title = title;
@@ -80,8 +80,8 @@ public class Exam {
   public void setTitle(String title) { this.title = title; }
   public String getModuleCode() { return moduleCode; }
   public void setModuleCode(String moduleCode) { this.moduleCode = moduleCode; }
-  public LocalDate getExamDate() { return examDate; }
-  public void setExamDate(LocalDate examDate) { this.examDate = examDate; }
+  public LocalDateTime getExamDate() { return examDate; }
+  public void setExamDate(LocalDateTime examDate) { this.examDate = examDate; }
   public String getRoom() { return room; }
   public void setRoom(String room) { this.room = room; }
   public String getExamType() { return examType; }

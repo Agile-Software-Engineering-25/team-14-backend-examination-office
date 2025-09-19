@@ -50,4 +50,10 @@ public class ExamController {
   public ResponseEntity<List<ExamResponse>> listExams() {
     return ResponseEntity.ok(service.list());
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
+    service.delete(id);
+    return ResponseEntity.ok().build();
+  }
 }
