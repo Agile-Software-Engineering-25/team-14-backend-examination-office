@@ -49,5 +49,3 @@ jobs:
         with:
           name: checkstyle-report
           path: target/checkstyle-report.xml
-
-
