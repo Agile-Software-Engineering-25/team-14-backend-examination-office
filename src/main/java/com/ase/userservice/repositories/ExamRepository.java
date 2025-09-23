@@ -9,8 +9,13 @@ import com.ase.userservice.entities.Exam;
 public interface ExamRepository extends JpaRepository<Exam, Long> {
 
   boolean existsByModuleCodeAndExamDateAndAttemptNumber(
-      String moduleCode, LocalDateTime examDate, Integer attemptNumber);
+      String moduleCode,
+      LocalDateTime examDate,
+      Integer attemptNumber);
 
   boolean existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(
-      String moduleCode, LocalDateTime examDate, Integer attemptNumber, Long id);
+      String moduleCode,
+      LocalDateTime examDate,
+      Integer attemptNumber,
+      Long id);
 }
