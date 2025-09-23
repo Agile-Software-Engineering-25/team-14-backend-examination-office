@@ -3,16 +3,10 @@ name: deploy-to-k8s
 on:
   push:
     branches:
-      - main
-      - edit-exam-ASE-436
-      - create-exam-ASE-435
-
-permissions:
-  contents: read
-  packages: write
+      - deployment
 
 jobs:
-  deploy:
+  test-action:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
