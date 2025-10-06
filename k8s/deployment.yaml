@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: exam-service
+  labels:
+    app: exam-service
 spec:
   replicas: 1
   selector:
@@ -15,22 +17,7 @@ spec:
       containers:
         - name: app
           image: ghcr.io/agile-software-engineering-25/team-14-backend-examination-office:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 20
-            periodSeconds: 20
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+
