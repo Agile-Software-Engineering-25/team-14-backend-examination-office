@@ -38,27 +38,29 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
-    <!-- spring-boot-starter-jdbc ist i.d.R. nicht nötig, weil JPA bereits JDBC mitbringt,
-         kann aber bleiben, wenn ihr es bewusst wollt. -->
+
+    <!-- Falls ihr bewusst JDBC nutzt, könnt ihr das lassen.
+         Andernfalls kann dieser Starter entfernt werden. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
+      <optional>true</optional>
     </dependency>
 
-    <!-- DBs -->
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+    <!-- DB Treiber -->
+    <!-- PostgreSQL: für Runtime verfügbar -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
+      <!-- Version wird durch Spring Boot BOM gemanagt -->
+    </dependency>
+
+    <!-- H2 nur für Tests (nicht in prod!) -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <!-- Optional -->
