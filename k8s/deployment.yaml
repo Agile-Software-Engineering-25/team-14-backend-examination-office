@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exam-service
+  labels:
+    app: exam-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exam-service
+  template:
+    metadata:
+      labels:
+        app: exam-service
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/agile-software-engineering-25/team-14-backend-examination-office:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+

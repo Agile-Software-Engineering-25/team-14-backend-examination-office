@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: exam-service
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /t14-exam
+            pathType: Prefix
+            backend:
+              service:
+                name: exam-service
+                port:
+                  number: 80
