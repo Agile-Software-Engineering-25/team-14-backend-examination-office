@@ -11,7 +11,7 @@ RUN mvn -B -q clean package spring-boot:repackage -DskipTests
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-jammy AS runtime
 WORKDIR /app
-COPY --from=build /app/target/*-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 8080

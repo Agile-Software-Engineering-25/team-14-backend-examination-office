@@ -2,17 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: exam-service
-  labels:
-    app: exam-service
+  namespace: ase-14
+  labels: { app: exam-service }
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: exam-service
+    matchLabels: { app: exam-service }
   template:
     metadata:
-      labels:
-        app: exam-service
+      labels: { app: exam-service }
     spec:
       containers:
         - name: app
@@ -20,4 +18,38 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: DB_HOST
+              valueFrom: { configMapKeyRef: { name: exam-db-config, key: DB_HOST } }
+            - name: DB_PORT
+              valueFrom: { configMapKeyRef: { name: exam-db-config, key: DB_PORT } }
+            - name: DB_NAME
+              valueFrom: { configMapKeyRef: { name: exam-db-config, key: DB_NAME } }
+            - name: DB_USER
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_USER } }
+            - name: DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_PASSWORD } }
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: "org.postgresql.Driver"
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "1Gi"
 
