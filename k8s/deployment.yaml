@@ -33,17 +33,21 @@ spec:
               valueFrom: { secretKeyRef: { name: exam-db-config, key: POSTGRES_PASSWORD } }
             - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
               value: "org.postgresql.Driver"
+          startupProbe:
+            httpGet: { path: /api/v1/actuator/health, port: 8080 }
+            failureThreshold: 30
+            periodSeconds: 5
           readinessProbe:
-            httpGet: { path: /actuator/health/readiness, port: 8080 }
-            initialDelaySeconds: 15
+            httpGet: { path: /api/v1/actuator/health/readiness, port: 8080 }
+            initialDelaySeconds: 20
             periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
+            timeoutSeconds: 2
+            failureThreshold: 6
           livenessProbe:
-            httpGet: { path: /actuator/health/liveness, port: 8080 }
-            initialDelaySeconds: 30
+            httpGet: { path: /api/v1/actuator/health/liveness, port: 8080 }
+            initialDelaySeconds: 90
             periodSeconds: 20
-            timeoutSeconds: 3
+            timeoutSeconds: 2
             failureThreshold: 3
           resources:
             requests:
