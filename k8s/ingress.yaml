@@ -2,13 +2,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: exam-service
-  annotations:
-    kubernetes.io/ingress.class: traefik
+  namespace: ase-14
+  labels:
+    app.kubernetes.io/name: exam-service
+    app.kubernetes.io/instance: exam-service
 spec:
+  ingressClassName: traefik
   rules:
-    - http:
+    - host: sau-portal.de
+      http:
         paths:
-          - path: /t14-exam
+          - path: /exa-grad/exam-service
             pathType: Prefix
             backend:
               service:
