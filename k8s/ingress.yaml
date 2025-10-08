@@ -3,11 +3,9 @@ kind: Ingress
 metadata:
   name: exam-service
   namespace: ase-14
-  labels:
-    app.kubernetes.io/name: exam-service
-    app.kubernetes.io/instance: exam-service
+  annotations:
+    kubernetes.io/ingress.class: traefik
 spec:
-  ingressClassName: traefik
   rules:
     - host: sau-portal.de
       http:
