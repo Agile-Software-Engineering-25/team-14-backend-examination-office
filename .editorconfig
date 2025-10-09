@@ -20,4 +20,3 @@ ij_java_imports_layout = import java.*; import javax.*; import org.*; import com
 
 [*.{yml,yaml}]
 indent_size = 2
-
