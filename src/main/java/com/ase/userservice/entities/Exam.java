@@ -3,6 +3,7 @@ package com.ase.userservice.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.*;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -71,8 +72,15 @@ public class Exam {
   @Column(name = "tool", nullable = false, length = 60)
   private List<String> tools = new ArrayList<>();
 
-  protected Exam() {
-  }
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+    name = "exam_students",
+    joinColumns = @JoinColumn(name = "exam_id"),
+    inverseJoinColumns = @JoinColumn(name = "student_id")
+  )
+  private List<Student> students = new ArrayList<>();
+
+  protected Exam() {}
 
   public Exam(
       String title,
@@ -202,5 +210,24 @@ public class Exam {
 
   public void setTools(List<String> tools) {
     this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
+  }
+  public List<Student> getStudents() { return students; }
+  public void setStudents(List<Student> students) {
+    this.students = students != null ? new ArrayList<>(students) : new ArrayList<>();
+  }
+
+  // Hilfsmethoden für die Beziehung zu Studenten
+  public void addStudent(Student student) {
+    if (!this.students.contains(student)) {
+      this.students.add(student);
+      student.getExams().add(this);
+    }
+  }
+
+  public void removeStudent(Student student) {
+    if (this.students.contains(student)) {
+      this.students.remove(student);
+      student.getExams().remove(this);
+    }
   }
 }
