@@ -1,6 +1,9 @@
 package com.ase.userservice.controllers;
 
 import java.util.List;
+import com.ase.userservice.entities.Student;
+import com.ase.userservice.services.StudentService;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,17 +38,19 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/exams")
 public class ExamController {
 
-  private final ExamService service;
+  private final ExamService examService;
+  private  final StudentService studentService;
 
-  public ExamController(ExamService service) {
-    this.service = service;
+  public ExamController(ExamService examService, StudentService studentService) {
+    this.examService = examService;
+    this.studentService = studentService;
   }
 
   @PostMapping
   public ResponseEntity<ExamResponse> createExam(
       @Valid @RequestBody CreateExamRequest req,
       UriComponentsBuilder uri) {
-    ExamResponse created = service.create(req);
+    ExamResponse created = examService.create(req);
     return ResponseEntity
         .created(
             uri.path("/api/exams/{id}")
@@ -58,22 +63,36 @@ public class ExamController {
   public ResponseEntity<ExamResponse> updateExam(
       @PathVariable Long id,
       @Valid @RequestBody CreateExamRequest req) {
-    return ResponseEntity.ok(service.update(id, req));
+    return ResponseEntity.ok(examService.update(id, req));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<ExamResponse> getExam(@PathVariable Long id) {
-    return ResponseEntity.ok(service.get(id));
+    return ResponseEntity.ok(examService.get(id));
   }
 
   @GetMapping
   public ResponseEntity<List<ExamResponse>> listExams() {
-    return ResponseEntity.ok(service.list());
+    return ResponseEntity.ok(examService.list());
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
-    service.delete(id);
+    examService.delete(id);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/student/{id}")
+  public ResponseEntity<List<ExamResponse>> listStudentExams(@PathVariable String id) {
+    Student student = studentService.getStudentByStudentId(id).orElse(null);
+    if (student == null)
+      return ResponseEntity.notFound().build();
+
+    return ResponseEntity.ok(student.getExams().stream().map(ExamService::toResponse).toList());
+  }
+
+  @GetMapping("/lecturer/{id}")
+  public ResponseEntity<List<ExamResponse>> listLecturerExams(@PathVariable String id) {
+    return ResponseEntity.internalServerError().build();
   }
 }
