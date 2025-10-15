@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: exam-service
+  namespace: ase-14
   labels:
     app: exam-service
 spec:
@@ -20,4 +21,32 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/exa-grad/exam-service"
 
+            # Variante A: Direkt vollständig setzen (am robustesten)
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres.db:5432/appdb"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: exam-db-config
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: exam-db-config
+                  key: POSTGRES_PASSWORD
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: "org.postgresql.Driver"
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "1Gi"
