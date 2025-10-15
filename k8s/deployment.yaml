@@ -27,7 +27,6 @@ spec:
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "/exa-grad/exam-service"
 
-            # Variante A: Direkt vollständig setzen (am robustesten)
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres.db:5432/appdb"
             - name: SPRING_DATASOURCE_USERNAME
