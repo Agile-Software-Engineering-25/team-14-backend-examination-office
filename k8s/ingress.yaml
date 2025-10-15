@@ -4,8 +4,9 @@ metadata:
   name: exam-service
   namespace: ase-14
   annotations:
-    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: traefik
   rules:
     - host: sau-portal.de
       http:
