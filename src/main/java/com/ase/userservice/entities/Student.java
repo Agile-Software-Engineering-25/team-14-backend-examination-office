@@ -9,8 +9,8 @@ import java.util.List;
 public class Student {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String id;
 
   @Column(nullable = false, unique = true, length = 20)
   private String studentId; // Matrikelnummer
@@ -48,7 +48,7 @@ public class Student {
     }
 
   // Getter und Setter
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

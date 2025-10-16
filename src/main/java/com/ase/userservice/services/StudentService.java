@@ -24,7 +24,7 @@ public class StudentService {
       return studentRepository.findAll();
   }
 
-  public Optional<Student> getStudentById(Long id) {
+  public Optional<Student> getStudentById(String id) {
       return studentRepository.findById(id);
   }
 
@@ -50,7 +50,7 @@ public class StudentService {
       return studentRepository.save(student);
   }
 
-  public void deleteStudent(Long id) {
+  public void deleteStudent(String id) {
       if (!studentRepository.existsById(id)) {
           throw new IllegalArgumentException("Student mit ID " + id + " existiert nicht");
       }
@@ -69,7 +69,7 @@ public class StudentService {
   /**
    * Fügt einen Studenten zu einer Prüfung hinzu
    */
-  public boolean addStudentToExam(Long studentId, Long examId) {
+  public boolean addStudentToExam(String studentId, String examId) {
       Optional<Student> studentOpt = studentRepository.findById(studentId);
       Optional<Exam> examOpt = examRepository.findById(examId);
 
@@ -87,7 +87,7 @@ public class StudentService {
   /**
    * Entfernt einen Studenten von einer Prüfung
    */
-  public boolean removeStudentFromExam(Long studentId, Long examId) {
+  public boolean removeStudentFromExam(String studentId, String examId) {
       Optional<Student> studentOpt = studentRepository.findById(studentId);
       Optional<Exam> examOpt = examRepository.findById(examId);
 
@@ -105,7 +105,7 @@ public class StudentService {
   /**
    * Holt alle Studenten einer bestimmten Prüfung
    */
-  public List<Student> getStudentsByExamId(Long examId) {
+  public List<Student> getStudentsByExamId(String examId) {
       return studentRepository.findStudentsByExamId(examId);
   }
 }

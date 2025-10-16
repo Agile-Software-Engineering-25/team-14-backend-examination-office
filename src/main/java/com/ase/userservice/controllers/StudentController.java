@@ -42,7 +42,7 @@ public class StudentController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<StudentResponse> getStudentById(@PathVariable Long id) {
+  public ResponseEntity<StudentResponse> getStudentById(@PathVariable String id) {
       Optional<Student> student = studentService.getStudentById(id);
       if (student.isPresent()) {
           return ResponseEntity.ok(new StudentResponse(student.get()));
@@ -80,7 +80,7 @@ public class StudentController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<StudentResponse> updateStudent(@PathVariable Long id,
+  public ResponseEntity<StudentResponse> updateStudent(@PathVariable String id,
                                                      @Valid @RequestBody CreateStudentRequest request) {
       Optional<Student> existingStudentOpt = studentService.getStudentById(id);
       if (!existingStudentOpt.isPresent()) {
@@ -100,7 +100,7 @@ public class StudentController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteStudent(@PathVariable String id) {
       try {
           studentService.deleteStudent(id);
           return ResponseEntity.noContent().build();
@@ -128,7 +128,7 @@ public class StudentController {
   }
 
   @PostMapping("/{studentId}/exams/{examId}")
-  public ResponseEntity<String> addStudentToExam(@PathVariable Long studentId, @PathVariable Long examId) {
+  public ResponseEntity<String> addStudentToExam(@PathVariable String studentId, @PathVariable String examId) {
       boolean success = studentService.addStudentToExam(studentId, examId);
       if (success) {
           return ResponseEntity.ok("Student erfolgreich zur Prüfung hinzugefügt");
@@ -137,7 +137,7 @@ public class StudentController {
   }
 
   @DeleteMapping("/{studentId}/exams/{examId}")
-  public ResponseEntity<String> removeStudentFromExam(@PathVariable Long studentId, @PathVariable Long examId) {
+  public ResponseEntity<String> removeStudentFromExam(@PathVariable String studentId, @PathVariable String examId) {
       boolean success = studentService.removeStudentFromExam(studentId, examId);
       if (success) {
           return ResponseEntity.ok("Student erfolgreich von der Prüfung entfernt");
@@ -146,7 +146,7 @@ public class StudentController {
   }
 
   @GetMapping("/exam/{examId}")
-  public ResponseEntity<List<StudentResponse>> getStudentsByExamId(@PathVariable Long examId) {
+  public ResponseEntity<List<StudentResponse>> getStudentsByExamId(@PathVariable String examId) {
       List<Student> students = studentService.getStudentsByExamId(examId);
       List<StudentResponse> response = students.stream()
               .map(StudentResponse::new)

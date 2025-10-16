@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.ase.userservice.entities.Exam;
 
 @Repository
-public interface ExamRepository extends JpaRepository<Exam, Long> {
+public interface ExamRepository extends JpaRepository<Exam, String> {
 
   boolean existsByModuleCodeAndExamDateAndAttemptNumber(
       String moduleCode,
@@ -17,5 +17,5 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
       String moduleCode,
       LocalDateTime examDate,
       Integer attemptNumber,
-      Long id);
+      String id);
 }
