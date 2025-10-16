@@ -15,53 +15,47 @@
   <artifactId>userservice</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>userService</name>
-  <description>userService</description>
+  <description>Backend: Exam/User Service</description>
 
   <properties>
     <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
-    <!-- optional lib -->
-    <dependency>
-      <groupId>ch.bildspur</groupId>
-      <artifactId>artnet4j</artifactId>
-      <version>0.6.2</version>
-    </dependency>
-
-    <!-- Spring Boot -->
+    <!-- Web + JSON -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+
+    <!-- JPA / Hibernate -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
-    <!-- spring-boot-starter-jdbc ist i.d.R. nicht nötig, weil JPA bereits JDBC mitbringt,
-         kann aber bleiben, wenn ihr es bewusst wollt. -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
+
+    <!-- Bean Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- DBs -->
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+    <!-- Postgres nur zur Laufzeit -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Optional -->
+    <!-- H2 nur für Tests -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Optional: Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -95,7 +89,10 @@
       <artifactId>flying-saucer-pdf</artifactId>
       <version>9.1.22</version>
     </dependency>
-  </dependencies>  <build>
+    
+  </dependencies>
+
+   <build>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -110,4 +107,5 @@
       </plugin>
     </plugins>
   </build>
+  
 </project>
