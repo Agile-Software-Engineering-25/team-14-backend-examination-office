@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Masterzeugnis</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm 2.5cm;
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+        }
+        .certificate-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px;
+            border: 3px double #2c5282;
+            background: linear-gradient(to bottom, #ffffff 0%, #faf5ff 100%);
+        }
+        .ornamental-line {
+            height: 1.5px;
+            background: linear-gradient(to right, transparent, #2c5282, transparent);
+            margin: 15px 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .certificate-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c5282;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-family: 'Garamond', 'Georgia', serif;
+        }
+        .university-name {
+            font-size: 15px;
+            color: #4a5568;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-top: 12px;
+        }
+        .main-content {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .declaration {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2d3748;
+            margin: 18px 0;
+        }
+        .student-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a202c;
+            margin: 14px 0;
+            text-decoration: underline;
+            text-decoration-color: #2c5282;
+            text-underline-offset: 5px;
+        }
+        .birth-info {
+            font-size: 13px;
+            color: #4a5568;
+            font-style: italic;
+            margin: 10px 0;
+        }
+        .study-program {
+            font-size: 13px;
+            color: #4a5568;
+            margin: 10px 0;
+        }
+        .degree-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c5282;
+            margin: 18px 0;
+            letter-spacing: 1px;
+        }
+        .legal-clause {
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: justify;
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #faf5ff;
+            border-left: 3px solid #2c5282;
+        }
+        .date-location {
+            margin-top: 25px;
+            font-size: 13px;
+            color: #2d3748;
+        }
+        .date-location p {
+            margin: 6px 0;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+            padding-top: 10px;
+        }
+        .signature-block {
+            width: 35%;
+            text-align: center;
+        }
+        .signature-line {
+            border-bottom: 1.5px solid #2d3748;
+            width: 100%;
+            margin-bottom: 5px;
+            padding-bottom: 40px;
+        }
+        .signature-title {
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .seal-placeholder {
+            text-align: center;
+            font-size: 10px;
+            color: #718096;
+            font-style: italic;
+            width: 30%;
+            align-self: center;
+            margin-left: 350px;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="ornamental-line"></div>
+        
+        <div class="header">
+            <div class="certificate-title">Masterzeugnis</div>
+            <div class="university-name" th:text="${universityName}">
+                Provadis School of International Management and Technology
+            </div>
+        </div>
+        
+        <div class="ornamental-line"></div>
+        
+        <div class="main-content">
+            <div class="declaration">
+                Die Hochschule verleiht hiermit
+            </div>
+            
+            <div class="student-name" th:text="${studentName}">Maria Musterfrau</div>
+            
+            <div class="birth-info">
+                geboren am <span th:text="${dateOfBirth}">15.05.1998</span>
+            </div>
+            
+            <div class="declaration">
+                den akademischen Grad
+            </div>
+            
+            <div class="degree-title">Master of Science (M.Sc.)</div>
+            
+            <div class="study-program">
+                im Studiengang <span th:text="${studyProgram}">Informatik</span>
+            </div>
+        </div>
+        
+        <div class="legal-clause">
+            Nach erfolgreichem Bestehen der Masterprüfung gemäß der Studien- und Prüfungsordnung 
+            wird der oben genannten Person der akademische Grad Master of Science (M.Sc.) verliehen. 
+            Alle erforderlichen Studien- und Prüfungsleistungen wurden ordnungsgemäß erbracht und 
+            die wissenschaftliche Masterarbeit wurde erfolgreich verteidigt.
+        </div>
+        
+        <div class="date-location">
+            <p><strong>Datum der Verleihung:</strong> <span th:text="${graduationDate}">13.10.2025</span></p>
+            <p><strong>Ausstellungsort:</strong> <span th:text="${location}">Frankfurt am Main</span></p>
+        </div>
+        
+        <div class="signatures">
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-title">Präsident/in der Hochschule</div>
+            </div>
+            <div class="seal-placeholder">
+                [Siegel der Hochschule]
+            </div>
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-title">Dekan/in der Fakultät</div>
+            </div>
+        </div>
+        
+        <div class="ornamental-line"></div>
+    </div>
+</body>
+</html>

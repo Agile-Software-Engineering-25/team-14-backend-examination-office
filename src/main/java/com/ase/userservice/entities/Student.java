@@ -1,8 +1,17 @@
 package com.ase.userservice.entities;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "students")
@@ -29,6 +38,9 @@ public class Student {
 
   @Column
   private Integer semester;
+  
+  @Column
+  private LocalDate dateOfBirth;
 
   @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
   private List<Exam> exams = new ArrayList<>();
@@ -45,6 +57,17 @@ public class Student {
         this.email = email;
         this.studyGroup = studyGroup;
         this.semester = semester;
+    }
+    
+    public Student(String studentId, String firstName, String lastName,
+                   String email, String studyGroup, Integer semester, LocalDate dateOfBirth) {
+        this.studentId = studentId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.studyGroup = studyGroup;
+        this.semester = semester;
+        this.dateOfBirth = dateOfBirth;
     }
 
   // Getter und Setter
@@ -98,6 +121,14 @@ public class Student {
 
     public void setSemester(Integer semester) {
         this.semester = semester;
+    }
+    
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+    
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public List<Exam> getExams() {
