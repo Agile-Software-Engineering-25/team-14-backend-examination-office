@@ -14,13 +14,15 @@ public interface StudentRepository extends JpaRepository<Student, String> {
   Optional<Student> findByMatriculationId(String matriculationId);
 
   @Query("""
-      SELECT DISTINCT s
-      FROM Student s
-      LEFT JOIN FETCH s.studentExams se
-      LEFT JOIN FETCH se.exam e
-      WHERE s.matriculationId = :matriculationId
-      """)
-  Optional<Student> findByMatriculationIdWithExams(@Param("matriculationId") String matriculationId);
+          SELECT DISTINCT s
+          FROM Student s
+          LEFT JOIN FETCH s.studentExams se
+          LEFT JOIN FETCH se.exam e
+          WHERE s.matriculationId = :matriculationId
+          """)
+  Optional<Student> findByMatriculationIdWithExams(
+      @Param("matriculationId") String matriculationId
+  );
 
   Optional<Student> findByEmail(String email);
 

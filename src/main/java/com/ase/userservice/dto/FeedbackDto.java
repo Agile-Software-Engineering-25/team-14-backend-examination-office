@@ -1,5 +1,7 @@
 package com.ase.userservice.dto;
 
+import java.time.LocalDate;
+import java.util.List;
 import com.ase.userservice.entities.ExamState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -7,19 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackDto {
-    private String studentId;
-    private String studentName;
-    private String examId;
-    private String examTitle;
-    private ExamState state;
+  private String studentId;
+  private String studentName;
+  private String examId;
+  private String examTitle;
+  private ExamState state;
 
   @JsonProperty("gradedAt")
   private LocalDate gradedAt;

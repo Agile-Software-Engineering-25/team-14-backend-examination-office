@@ -3,7 +3,6 @@ package com.ase.userservice.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.ase.userservice.entities.Exam;
-import com.ase.userservice.entities.ExamState;
 import com.ase.userservice.entities.ExamType;
 
 public record ExamResponse(
