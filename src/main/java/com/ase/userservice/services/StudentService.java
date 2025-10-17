@@ -77,13 +77,23 @@ public class StudentService {
       Student student = studentOpt.get();
       Exam exam = examOpt.get();
 
-      if (student.getExams().contains(exam)) {
-        return false;
+      boolean alreadyLinked = student.getExams() != null && student.getExams().stream()
+          .anyMatch(e -> e != null && e.getId() != null && e.getId().equals(exam.getId()));
+      if (alreadyLinked) {
+          return true;
       }
 
       student.addExam(exam);
-      studentRepository.save(student);
-      return true;
+      if (exam.getStudents() != null && !exam.getStudents().contains(student)) {
+          exam.getStudents().add(student);
+      }
+
+      try {
+          studentRepository.saveAndFlush(student);
+          return true;
+      } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+          return true;
+      }
     }
     return false;
   }
