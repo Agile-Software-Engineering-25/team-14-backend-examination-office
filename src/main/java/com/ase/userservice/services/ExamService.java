@@ -1,14 +1,13 @@
 package com.ase.userservice.services;
 
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.CreateExamRequest;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.repositories.ExamRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -78,8 +77,15 @@ public class ExamService {
                               Integer attemptNumber,
                               String excludeId) {
     boolean exists = (excludeId == null)
-        ? repo.existsByModuleCodeAndExamDateAndAttemptNumber(moduleCode, examDate, attemptNumber)
-        : repo.existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(moduleCode, examDate, attemptNumber, excludeId);
+        ? repo.existsByModuleCodeAndExamDateAndAttemptNumber(
+        moduleCode,
+        examDate,
+        attemptNumber)
+        : repo.existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(
+        moduleCode,
+        examDate,
+        attemptNumber,
+        excludeId);
 
     if (exists) {
       throw new IllegalStateException(

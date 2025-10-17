@@ -1,16 +1,15 @@
 package com.ase.userservice.services;
 
+import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentRepository;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -38,15 +37,21 @@ public class StudentService {
   @Transactional(readOnly = true)
   public Student getStudentByStudentId(String studentId) {
     return studentRepository.findByStudentId(studentId)
-        .orElseThrow(() -> new NotFoundException("Student with matriculation number " + studentId + " not found"));
+        .orElseThrow(() -> new NotFoundException(
+            "Student with matriculation number " + studentId + " not found"
+        ));
   }
 
   public Student createStudent(Student student) {
     if (studentRepository.existsByStudentId(student.getStudentId())) {
-      throw new IllegalArgumentException("Student with matriculation number " + student.getStudentId() + " already exists");
+      throw new IllegalArgumentException(
+          "Student with matriculation number " + student.getStudentId() + " already exists"
+      );
     }
     if (studentRepository.existsByEmail(student.getEmail())) {
-      throw new IllegalArgumentException("Student with email " + student.getEmail() + " already exists");
+      throw new IllegalArgumentException(
+          "Student with email " + student.getEmail() + " already exists"
+      );
     }
     return studentRepository.save(student);
   }
@@ -67,7 +72,10 @@ public class StudentService {
 
   @Transactional(readOnly = true)
   public List<Student> searchStudentsByName(String searchTerm) {
-    return studentRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchTerm, searchTerm);
+    return studentRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+        searchTerm,
+        searchTerm
+    );
   }
 
   @Transactional(readOnly = true)
@@ -83,7 +91,8 @@ public class StudentService {
     student.addExam(exam);
     try {
       studentRepository.save(student);
-    } catch (DataIntegrityViolationException ignored) {
+    }
+    catch (DataIntegrityViolationException ignored) {
       // safe to ignore duplicate relationship
     }
   }

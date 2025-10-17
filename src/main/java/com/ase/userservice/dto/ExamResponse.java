@@ -1,10 +1,9 @@
 package com.ase.userservice.dto;
 
-import com.ase.userservice.entities.Exam;
-import com.ase.userservice.entities.ExamState;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import com.ase.userservice.entities.Exam;
+import com.ase.userservice.entities.ExamState;
 
 public record ExamResponse(
     String id,

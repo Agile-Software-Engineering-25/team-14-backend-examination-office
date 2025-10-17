@@ -1,10 +1,21 @@
 package com.ase.userservice.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.HashSet;
 import java.util.Set;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "students")
@@ -75,17 +86,28 @@ public class Student {
   }
 
   public void updateFrom(Student other) {
-    if (other.firstName != null) this.firstName = other.firstName;
-    if (other.lastName != null) this.lastName = other.lastName;
-    if (other.email != null) this.email = other.email;
+    if (other.firstName != null) {
+      this.firstName = other.firstName;
+    }
+    if (other.lastName != null) {
+      this.lastName = other.lastName;
+    }
+    if (other.email != null) {
+      this.email = other.email;
+    }
     this.studyGroup = other.studyGroup;
     this.semester = other.semester;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Student other = (Student) o;
     return id != null && id.equals(other.id);
   }
