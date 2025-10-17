@@ -66,7 +66,7 @@ public class Exam {
   @Column(nullable = false)
   private boolean fileUploadRequired;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(
       name = "exam_tools",
       joinColumns = @JoinColumn(name = "exam_id")

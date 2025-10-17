@@ -69,7 +69,7 @@ public class StudentService {
   /**
    * Fügt einen Studenten zu einer Prüfung hinzu
    */
-  public boolean addStudentToExam(String studentId, Long examId) {
+  public boolean addStudentToExam(String studentId, String examId) {
     Optional<Student> studentOpt = studentRepository.findById(studentId);
     Optional<Exam> examOpt = examRepository.findById(examId);
 
