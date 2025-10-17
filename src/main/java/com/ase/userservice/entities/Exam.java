@@ -30,8 +30,8 @@ import jakarta.persistence.UniqueConstraint;
 public class Exam {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String id;
 
   @Column(nullable = false, length = 160)
   private String title;
@@ -117,7 +117,7 @@ public class Exam {
     }
   }
 
-  public Long getId() {
+  public String getId() {
     return id;
   }
 

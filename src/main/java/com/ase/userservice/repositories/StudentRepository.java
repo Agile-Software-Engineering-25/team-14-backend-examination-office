@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface StudentRepository extends JpaRepository<Student, Long> {
+public interface StudentRepository extends JpaRepository<Student, String> {
 
     Optional<Student> findByStudentId(String studentId);
 
@@ -21,7 +21,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         String firstName, String lastName);
 
     @Query("SELECT s FROM Student s JOIN s.exams e WHERE e.id = :examId")
-    List<Student> findStudentsByExamId(@Param("examId") Long examId);
+    List<Student> findStudentsByExamId(@Param("examId") String examId);
 
     boolean existsByStudentId(String studentId);
 

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class StudentResponse {
 
-  private Long id;
+  private String id;
   private String studentId;
   private String firstName;
   private String lastName;
@@ -14,7 +14,7 @@ public class StudentResponse {
   private String studyGroup;
   private Integer semester;
   private String fullName;
-  private List<Long> examIds;
+  private List<String> examIds;
 
   // Konstruktoren
   public StudentResponse() {}
@@ -34,11 +34,11 @@ public class StudentResponse {
   }
 
   // Getter und Setter
-  public Long getId() {
+  public String getId() {
       return id;
   }
 
-  public void setId(Long id) {
+  public void setId(String id) {
       this.id = id;
   }
 
@@ -98,11 +98,11 @@ public class StudentResponse {
       this.fullName = fullName;
   }
 
-  public List<Long> getExamIds() {
+  public List<String> getExamIds() {
       return examIds;
   }
 
-  public void setExamIds(List<Long> examIds) {
+  public void setExamIds(List<String> examIds) {
       this.examIds = examIds;
   }
 }
