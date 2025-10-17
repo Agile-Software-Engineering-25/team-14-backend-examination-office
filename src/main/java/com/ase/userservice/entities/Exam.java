@@ -74,9 +74,12 @@ public class Exam {
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-    name = "exam_students",
-    joinColumns = @JoinColumn(name = "exam_id"),
-    inverseJoinColumns = @JoinColumn(name = "student_id")
+      name = "exam_students",
+      joinColumns = @JoinColumn(name = "exam_id"),
+      inverseJoinColumns = @JoinColumn(name = "student_id"),
+      uniqueConstraints = {
+          @UniqueConstraint(columnNames = {"exam_id", "student_id"})
+      }
   )
   private List<Student> students = new ArrayList<>();
 

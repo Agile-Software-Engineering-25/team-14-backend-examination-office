@@ -70,18 +70,22 @@ public class StudentService {
    * Fügt einen Studenten zu einer Prüfung hinzu
    */
   public boolean addStudentToExam(Long studentId, Long examId) {
-      Optional<Student> studentOpt = studentRepository.findById(studentId);
-      Optional<Exam> examOpt = examRepository.findById(examId);
+    Optional<Student> studentOpt = studentRepository.findById(studentId);
+    Optional<Exam> examOpt = examRepository.findById(examId);
 
-      if (studentOpt.isPresent() && examOpt.isPresent()) {
-          Student student = studentOpt.get();
-          Exam exam = examOpt.get();
+    if (studentOpt.isPresent() && examOpt.isPresent()) {
+      Student student = studentOpt.get();
+      Exam exam = examOpt.get();
 
-          student.addExam(exam);
-          studentRepository.save(student);
-          return true;
+      if (student.getExams().contains(exam)) {
+        return false;
       }
-      return false;
+
+      student.addExam(exam);
+      studentRepository.save(student);
+      return true;
+    }
+    return false;
   }
 
   /**
