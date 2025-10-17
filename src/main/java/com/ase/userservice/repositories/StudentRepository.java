@@ -11,9 +11,12 @@ import java.util.Optional;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, String> {
 
-    Optional<Student> findByStudentId(String studentId);
+  Optional<Student> findByStudentId(String studentId);
 
-    Optional<Student> findByEmail(String email);
+  @Query("SELECT s FROM Student s LEFT JOIN FETCH s.exams WHERE s.studentId = :studentId")
+  Optional<Student> findByStudentIdWithExams(@Param("studentId") String studentId);
+
+  Optional<Student> findByEmail(String email);
 
     List<Student> findByStudyGroup(String studyGroup);
 

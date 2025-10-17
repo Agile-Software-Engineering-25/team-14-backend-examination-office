@@ -84,11 +84,7 @@ public class ExamController {
 
   @GetMapping("/student/{id}")
   public ResponseEntity<List<ExamResponse>> listStudentExams(@PathVariable String id) {
-    Student student = studentService.getStudentByStudentId(id).orElse(null);
-    if (student == null)
-      return ResponseEntity.notFound().build();
-
-    return ResponseEntity.ok(student.getExams().stream().map(ExamService::toResponse).toList());
+    return ResponseEntity.ok(studentService.getExamsForStudent(id));
   }
 
   @GetMapping("/lecturer/{id}")
