@@ -1,8 +1,8 @@
 package com.ase.userservice.entities;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "students")
@@ -31,7 +31,7 @@ public class Student {
   private Integer semester;
 
   @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
-  private List<Exam> exams = new ArrayList<>();
+  private Set<Exam> exams = new HashSet<>();
 
   // Konstruktoren
   protected Student() {}
@@ -100,30 +100,40 @@ public class Student {
         this.semester = semester;
     }
 
-    public List<Exam> getExams() {
+    public Set<Exam> getExams() {
         return exams;
     }
 
-    public void setExams(List<Exam> exams) {
-        this.exams = exams != null ? new ArrayList<>(exams) : new ArrayList<>();
+    public void setExams(Set<Exam> exams) {
+        this.exams = exams != null ? new HashSet<>(exams) : new HashSet<>();
     }
 
     // Hilfsmethoden für die Beziehung
     public void addExam(Exam exam) {
-        if (!this.exams.contains(exam)) {
-            this.exams.add(exam);
-            exam.getStudents().add(this);
-        }
+        if (exam == null) return;
+        // Inverse side: nur lokale Menge pflegen. Owning side ist Exam.students
+        this.exams.add(exam);
     }
 
     public void removeExam(Exam exam) {
-        if (this.exams.contains(exam)) {
-            this.exams.remove(exam);
-            exam.getStudents().remove(this);
-        }
+        if (exam == null) return;
+        this.exams.remove(exam);
     }
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student other = (Student) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
