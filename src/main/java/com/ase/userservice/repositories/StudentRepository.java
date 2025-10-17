@@ -1,11 +1,13 @@
 package com.ase.userservice.repositories;
 
+import java.util.List;
+
 import com.ase.userservice.entities.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.List;
+
 import java.util.Optional;
 
 @Repository
@@ -18,15 +20,16 @@ public interface StudentRepository extends JpaRepository<Student, String> {
 
   Optional<Student> findByEmail(String email);
 
-    List<Student> findByStudyGroup(String studyGroup);
+  List<Student> findByStudyGroup(String studyGroup);
 
-    List<Student> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-        String firstName, String lastName);
+  List<Student> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+      String firstName, String lastName
+  );
 
-    @Query("SELECT s FROM Student s JOIN s.exams e WHERE e.id = :examId")
-    List<Student> findStudentsByExamId(@Param("examId") String examId);
+  @Query("SELECT DISTINCT s FROM Student s JOIN FETCH s.exams e WHERE e.id = :examId")
+  List<Student> findStudentsByExamId(@Param("examId") String examId);
 
-    boolean existsByStudentId(String studentId);
+  boolean existsByStudentId(String studentId);
 
-    boolean existsByEmail(String email);
+  boolean existsByEmail(String email);
 }

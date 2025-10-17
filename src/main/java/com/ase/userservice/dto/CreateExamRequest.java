@@ -20,15 +20,11 @@ public record CreateExamRequest(
     @NotNull @Positive Integer duration,
     @NotNull @Positive Integer attemptNumber,
     boolean fileUploadRequired,
-    @NotNull @Size(max = 20) List<@NotBlank String> tools) {
-
-  public void validateBusinessRules() {
-    boolean hasBlank =
-        tools != null
-        && tools.stream().anyMatch(s -> s == null || s.isBlank());
-    if (hasBlank) {
-      throw new IllegalArgumentException(
-          "tools must not contain blank items");
+    @NotNull @Size(max = 20) List<@NotBlank String> tools
+) {
+  public CreateExamRequest {
+    if (tools != null && tools.stream().anyMatch(s -> s == null || s.isBlank())) {
+      throw new IllegalArgumentException("tools must not contain blank items");
     }
   }
 }

@@ -17,5 +17,5 @@ public interface ExamRepository extends JpaRepository<Exam, String> {
       String moduleCode,
       LocalDateTime examDate,
       Integer attemptNumber,
-      String id);
+      String excludedId);
 }

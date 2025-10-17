@@ -5,19 +5,28 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.ase.userservice.dto.CreateExamRequest;
 import jakarta.persistence.*;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(
     name = "exams",
     uniqueConstraints = {
@@ -66,11 +75,12 @@ public class Exam {
   @Column(nullable = false)
   private boolean fileUploadRequired;
 
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ExamState examState = ExamState.EXAM_OPEN;
+
   @ElementCollection
-  @CollectionTable(
-      name = "exam_tools",
-      joinColumns = @JoinColumn(name = "exam_id")
-  )
+  @CollectionTable(name = "exam_tools", joinColumns = @JoinColumn(name = "exam_id"))
   @Column(name = "tool", nullable = false, length = 60)
   private List<String> tools = new ArrayList<>();
 
@@ -79,28 +89,22 @@ public class Exam {
       name = "exam_students",
       joinColumns = @JoinColumn(name = "exam_id"),
       inverseJoinColumns = @JoinColumn(name = "student_id"),
-      uniqueConstraints = {
-          @UniqueConstraint(columnNames = {"exam_id", "student_id"})
-      }
+      uniqueConstraints = @UniqueConstraint(columnNames = {"exam_id", "student_id"})
   )
   private Set<Student> students = new HashSet<>();
 
-  protected Exam() {}
-
-  public Exam(
-      String title,
-      String moduleCode,
-      LocalDateTime examDate,
-      String room,
-      String examType,
-      String semester,
-      Integer ects,
-      Integer maxPoints,
-      Integer duration,
-      Integer attemptNumber,
-      boolean fileUploadRequired,
-      List<String> tools
-  ) {
+  public Exam(String title,
+              String moduleCode,
+              LocalDateTime examDate,
+              String room,
+              String examType,
+              String semester,
+              Integer ects,
+              Integer maxPoints,
+              Integer duration,
+              Integer attemptNumber,
+              boolean fileUploadRequired,
+              List<String> tools) {
     this.title = title;
     this.moduleCode = moduleCode;
     this.examDate = examDate;
@@ -112,140 +116,33 @@ public class Exam {
     this.duration = duration;
     this.attemptNumber = attemptNumber;
     this.fileUploadRequired = fileUploadRequired;
-    if (tools != null) {
-      this.tools = new ArrayList<>(tools);
-    }
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getModuleCode() {
-    return moduleCode;
-  }
-
-  public void setModuleCode(String moduleCode) {
-    this.moduleCode = moduleCode;
-  }
-
-  public LocalDateTime getExamDate() {
-    return examDate;
-  }
-
-  public void setExamDate(LocalDateTime examDate) {
-    this.examDate = examDate;
-  }
-
-  public String getRoom() {
-    return room;
-  }
-
-  public void setRoom(String room) {
-    this.room = room;
-  }
-
-  public String getExamType() {
-    return examType;
-  }
-
-  public void setExamType(String examType) {
-    this.examType = examType;
-  }
-
-  public String getSemester() {
-    return semester;
-  }
-
-  public void setSemester(String semester) {
-    this.semester = semester;
-  }
-
-  public Integer getEcts() {
-    return ects;
-  }
-
-  public void setEcts(Integer ects) {
-    this.ects = ects;
-  }
-
-  public Integer getMaxPoints() {
-    return maxPoints;
-  }
-
-  public void setMaxPoints(Integer maxPoints) {
-    this.maxPoints = maxPoints;
-  }
-
-  public Integer getDuration() {
-    return duration;
-  }
-
-  public void setDuration(Integer duration) {
-    this.duration = duration;
-  }
-
-  public Integer getAttemptNumber() {
-    return attemptNumber;
-  }
-
-  public void setAttemptNumber(Integer attemptNumber) {
-    this.attemptNumber = attemptNumber;
-  }
-
-  public boolean isFileUploadRequired() {
-    return fileUploadRequired;
-  }
-
-  public void setFileUploadRequired(boolean fileUploadRequired) {
-    this.fileUploadRequired = fileUploadRequired;
-  }
-
-  public List<String> getTools() {
-    return tools;
-  }
-
-  public void setTools(List<String> tools) {
     this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
   }
-  public Set<Student> getStudents() { return students; }
-  public void setStudents(Set<Student> students) {
-    this.students = students != null ? new HashSet<>(students) : new HashSet<>();
-  }
 
-  // Hilfsmethoden für die Beziehung zu Studenten
   public void addStudent(Student student) {
-    if (student == null) return;
-    if (this.students.add(student)) {
+    if (student != null && students.add(student)) {
       student.getExams().add(this);
     }
   }
 
   public void removeStudent(Student student) {
-    if (student == null) return;
-    if (this.students.remove(student)) {
+    if (student != null && students.remove(student)) {
       student.getExams().remove(this);
     }
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Exam other = (Exam) o;
-    return id != null && id.equals(other.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return getClass().hashCode();
+  public void updateFromRequest(CreateExamRequest req) {
+    this.title = req.title();
+    this.moduleCode = req.moduleCode();
+    this.examDate = req.examDate();
+    this.room = req.room();
+    this.examType = req.examType();
+    this.semester = req.semester();
+    this.ects = req.ects();
+    this.maxPoints = req.maxPoints();
+    this.duration = req.duration();
+    this.attemptNumber = req.attemptNumber();
+    this.fileUploadRequired = req.fileUploadRequired();
+    this.tools = List.copyOf(req.tools());
   }
 }

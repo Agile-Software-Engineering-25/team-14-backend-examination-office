@@ -1,15 +1,17 @@
 package com.ase.userservice.services;
 
-import java.util.List;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.CreateExamRequest;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.repositories.ExamRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
+@Transactional
 public class ExamService {
 
   private final ExamRepository repo;
@@ -18,16 +20,8 @@ public class ExamService {
     this.repo = repo;
   }
 
-  @Transactional
   public ExamResponse create(CreateExamRequest req) {
-    req.validateBusinessRules();
-
-    if (repo.existsByModuleCodeAndExamDateAndAttemptNumber(
-        req.moduleCode(), req.examDate(), req.attemptNumber())) {
-      throw new IllegalStateException(
-          "Exam with same moduleCode, examDate and attemptNumber "
-              + "already exists");
-    }
+    checkDuplicate(req.moduleCode(), req.examDate(), req.attemptNumber(), null);
 
     Exam exam = new Exam(
         req.title(),
@@ -47,34 +41,50 @@ public class ExamService {
     return toResponse(repo.save(exam));
   }
 
-  @Transactional
   public ExamResponse update(String id, CreateExamRequest req) {
-    req.validateBusinessRules();
-
     Exam exam = repo.findById(id)
         .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
 
-    if (repo.existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(
-        req.moduleCode(), req.examDate(), req.attemptNumber(), id)) {
-      throw new IllegalStateException(
-          "Exam with same moduleCode, examDate and attemptNumber "
-              + "already exists");
-    }
+    checkDuplicate(req.moduleCode(), req.examDate(), req.attemptNumber(), id);
 
-    exam.setTitle(req.title());
-    exam.setModuleCode(req.moduleCode());
-    exam.setExamDate(req.examDate());
-    exam.setRoom(req.room());
-    exam.setExamType(req.examType());
-    exam.setSemester(req.semester());
-    exam.setEcts(req.ects());
-    exam.setMaxPoints(req.maxPoints());
-    exam.setDuration(req.duration());
-    exam.setAttemptNumber(req.attemptNumber());
-    exam.setFileUploadRequired(req.fileUploadRequired());
-    exam.setTools(req.tools());
+    exam.updateFromRequest(req);
 
     return toResponse(repo.save(exam));
+  }
+
+  @Transactional(readOnly = true)
+  public ExamResponse get(String id) {
+    return repo.findById(id)
+        .map(ExamService::toResponse)
+        .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
+  }
+
+  @Transactional(readOnly = true)
+  public List<ExamResponse> list() {
+    return repo.findAll().stream()
+        .map(ExamService::toResponse)
+        .toList();
+  }
+
+  public void delete(String id) {
+    if (!repo.existsById(id)) {
+      throw new NotFoundException("Exam " + id + " not found");
+    }
+    repo.deleteById(id);
+  }
+
+  private void checkDuplicate(String moduleCode,
+                              java.time.LocalDateTime examDate,
+                              Integer attemptNumber,
+                              String excludeId) {
+    boolean exists = (excludeId == null)
+        ? repo.existsByModuleCodeAndExamDateAndAttemptNumber(moduleCode, examDate, attemptNumber)
+        : repo.existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(moduleCode, examDate, attemptNumber, excludeId);
+
+    if (exists) {
+      throw new IllegalStateException(
+          "Exam with same moduleCode, examDate and attemptNumber already exists");
+    }
   }
 
   public static ExamResponse toResponse(Exam e) {
@@ -91,24 +101,8 @@ public class ExamService {
         e.getDuration(),
         e.getAttemptNumber(),
         e.isFileUploadRequired(),
+        e.getExamState(),
         e.getTools()
     );
-  }
-
-  @Transactional(readOnly = true)
-  public ExamResponse get(String id) {
-    Exam exam = repo.findById(id)
-        .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
-    return toResponse(exam);
-  }
-
-  @Transactional(readOnly = true)
-  public List<ExamResponse> list() {
-    return repo.findAll().stream().map(ExamService::toResponse).toList();
-  }
-
-  @Transactional
-  public void delete(String id) {
-    repo.deleteById(id);
   }
 }

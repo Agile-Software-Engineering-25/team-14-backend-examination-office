@@ -1,24 +1,35 @@
 package com.ase.userservice.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "students")
+@Getter
+@Setter
+@ToString(onlyExplicitlyIncluded = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Student {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
+  @ToString.Include
   private String id;
 
   @Column(nullable = false, unique = true, length = 20)
-  private String studentId; // Matrikelnummer
+  @ToString.Include
+  private String studentId;
 
   @Column(nullable = false, length = 100)
+  @ToString.Include
   private String firstName;
 
   @Column(nullable = false, length = 100)
+  @ToString.Include
   private String lastName;
 
   @Column(nullable = false, unique = true, length = 150)
@@ -33,107 +44,54 @@ public class Student {
   @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
   private Set<Exam> exams = new HashSet<>();
 
-  // Konstruktoren
-  protected Student() {}
+  public Student(String studentId, String firstName, String lastName,
+                 String email, String studyGroup, Integer semester) {
+    this.studentId = studentId;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.studyGroup = studyGroup;
+    this.semester = semester;
+  }
 
-    public Student(String studentId, String firstName, String lastName,
-                   String email,
-                   String studyGroup, Integer semester) {
-        this.studentId = studentId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.studyGroup = studyGroup;
-        this.semester = semester;
+  public void addExam(Exam exam) {
+    if (exam != null && exams.add(exam)) {
+      exam.getStudents().add(this);
     }
+  }
 
-  // Getter und Setter
-    public String getId() {
-        return id;
+  public void removeExam(Exam exam) {
+    if (exam != null && exams.remove(exam)) {
+      exam.getStudents().remove(this);
     }
+  }
 
-    public String getStudentId() {
-        return studentId;
-    }
+  public Set<Exam> getExams() {
+    return Set.copyOf(exams);
+  }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
-    }
+  public String getFullName() {
+    return firstName + " " + lastName;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public void updateFrom(Student other) {
+    if (other.firstName != null) this.firstName = other.firstName;
+    if (other.lastName != null) this.lastName = other.lastName;
+    if (other.email != null) this.email = other.email;
+    this.studyGroup = other.studyGroup;
+    this.semester = other.semester;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Student other = (Student) o;
+    return id != null && id.equals(other.id);
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getStudyGroup() {
-        return studyGroup;
-    }
-
-    public void setStudyGroup(String studyGroup) {
-        this.studyGroup = studyGroup;
-    }
-
-    public Integer getSemester() {
-        return semester;
-    }
-
-    public void setSemester(Integer semester) {
-        this.semester = semester;
-    }
-
-    public Set<Exam> getExams() {
-        return exams;
-    }
-
-    public void setExams(Set<Exam> exams) {
-        this.exams = exams != null ? new HashSet<>(exams) : new HashSet<>();
-    }
-
-    // Hilfsmethoden für die Beziehung
-    public void addExam(Exam exam) {
-        if (exam == null) return;
-        // Inverse side: nur lokale Menge pflegen. Owning side ist Exam.students
-        this.exams.add(exam);
-    }
-
-    public void removeExam(Exam exam) {
-        if (exam == null) return;
-        this.exams.remove(exam);
-    }
-
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Student other = (Student) o;
-        return id != null && id.equals(other.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }
