@@ -14,9 +14,11 @@ import com.ase.userservice.repositories.ExamRepository;
 public class ExamService {
 
   private final ExamRepository repo;
+  private FeedbackService feedbackService;
 
-  public ExamService(ExamRepository repo) {
+  public ExamService(ExamRepository repo, FeedbackService feedbackService) {
     this.repo = repo;
+    this.feedbackService = feedbackService;
   }
 
   public ExamResponse create(CreateExamRequest req) {
@@ -53,8 +55,9 @@ public class ExamService {
 
   @Transactional(readOnly = true)
   public ExamResponse get(String id) {
+    Integer submissionCount = feedbackService.getFeedbackForExam(id).size();
     return repo.findById(id)
-        .map(ExamService::toResponse)
+        .map(exam -> ExamService.toResponse(exam, submissionCount))
         .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
   }
 
@@ -94,6 +97,10 @@ public class ExamService {
   }
 
   public static ExamResponse toResponse(Exam e) {
+    return ExamService.toResponse(e, 0);
+  }
+
+  public static ExamResponse toResponse(Exam e, Integer submissionCount) {
     return new ExamResponse(
         e.getId(),
         e.getTitle(),
@@ -107,8 +114,8 @@ public class ExamService {
         e.getDuration(),
         e.getAttemptNumber(),
         e.isFileUploadRequired(),
-        e.getExamState(),
-        e.getTools()
+        e.getTools(),
+        submissionCount
     );
   }
 }

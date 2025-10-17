@@ -17,12 +17,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -59,8 +60,9 @@ public class Exam {
   @Column(nullable = false, length = 80)
   private String room;
 
-  @Column(nullable = false, length = 40)
-  private String examType;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ExamType examType;
 
   @Column(nullable = false, length = 20)
   private String semester;
@@ -80,29 +82,19 @@ public class Exam {
   @Column(nullable = false)
   private boolean fileUploadRequired;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private ExamState examState = ExamState.EXAM_OPEN;
-
   @ElementCollection
   @CollectionTable(name = "exam_tools", joinColumns = @JoinColumn(name = "exam_id"))
   @Column(name = "tool", nullable = false, length = 60)
   private List<String> tools = new ArrayList<>();
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "exam_students",
-      joinColumns = @JoinColumn(name = "exam_id"),
-      inverseJoinColumns = @JoinColumn(name = "student_id"),
-      uniqueConstraints = @UniqueConstraint(columnNames = {"exam_id", "student_id"})
-  )
-  private Set<Student> students = new HashSet<>();
+  @OneToMany(mappedBy = "exam", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<StudentExam> studentExams = new HashSet<>();
 
   public Exam(String title,
               String moduleCode,
               LocalDateTime examDate,
               String room,
-              String examType,
+              ExamType examType,
               String semester,
               Integer ects,
               Integer maxPoints,
@@ -125,15 +117,38 @@ public class Exam {
   }
 
   public void addStudent(Student student) {
-    if (student != null && students.add(student)) {
-      student.getExams().add(this);
+    if (student != null) {
+      StudentExam studentExam = new StudentExam();
+      studentExam.setStudent(student);
+      studentExam.setExam(this);
+      studentExams.add(studentExam);
+      student.getStudentExams().add(studentExam);
     }
   }
 
   public void removeStudent(Student student) {
-    if (student != null && students.remove(student)) {
-      student.getExams().remove(this);
+    if (student != null) {
+      studentExams.removeIf(studentExam -> {
+        if (studentExam.getStudent().equals(student)) {
+          student.getStudentExams().remove(studentExam);
+          return true;
+        }
+        return false;
+      });
     }
+  }
+
+  public Set<Student> getStudents() {
+    return studentExams.stream()
+        .map(StudentExam::getStudent)
+        .collect(java.util.stream.Collectors.toSet());
+  }
+
+  public StudentExam getStudentExam(Student student) {
+    return studentExams.stream()
+        .filter(studentExam -> studentExam.getStudent().equals(student))
+        .findFirst()
+        .orElse(null);
   }
 
   public void updateFromRequest(CreateExamRequest req) {

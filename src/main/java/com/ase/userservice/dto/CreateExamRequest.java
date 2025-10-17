@@ -2,6 +2,7 @@ package com.ase.userservice.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import com.ase.userservice.entities.ExamType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,7 +13,7 @@ public record CreateExamRequest(@NotBlank String title,
                                 @NotBlank String moduleCode,
                                 @NotNull LocalDateTime examDate,
                                 @NotBlank String room,
-                                @NotBlank String examType,
+                                @NotBlank ExamType examType,
                                 @NotBlank String semester,
                                 @NotNull @PositiveOrZero Integer ects,
                                 @NotNull @Positive Integer maxPoints,

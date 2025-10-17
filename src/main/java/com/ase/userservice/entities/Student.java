@@ -2,16 +2,18 @@ package com.ase.userservice.entities;
 
 import java.util.HashSet;
 import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +35,7 @@ public class Student {
 
   @Column(nullable = false, unique = true, length = 20)
   @ToString.Include
-  private String studentId;
+  private String matriculationId;
 
   @Column(nullable = false, length = 100)
   @ToString.Include
@@ -52,12 +54,12 @@ public class Student {
   @Column
   private Integer semester;
 
-  @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
-  private Set<Exam> exams = new HashSet<>();
+  @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<StudentExam> studentExams = new HashSet<>();
 
-  public Student(String studentId, String firstName, String lastName,
+  public Student(String matriculationId, String firstName, String lastName,
                  String email, String studyGroup, Integer semester) {
-    this.studentId = studentId;
+    this.matriculationId = matriculationId;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -66,19 +68,38 @@ public class Student {
   }
 
   public void addExam(Exam exam) {
-    if (exam != null && exams.add(exam)) {
-      exam.getStudents().add(this);
+    if (exam != null) {
+      StudentExam studentExam = new StudentExam();
+      studentExam.setStudent(this);
+      studentExam.setExam(exam);
+      studentExams.add(studentExam);
+      exam.getStudentExams().add(studentExam);
     }
   }
 
   public void removeExam(Exam exam) {
-    if (exam != null && exams.remove(exam)) {
-      exam.getStudents().remove(this);
+    if (exam != null) {
+      studentExams.removeIf(studentExam -> {
+        if (studentExam.getExam().equals(exam)) {
+          exam.getStudentExams().remove(studentExam);
+          return true;
+        }
+        return false;
+      });
     }
   }
 
   public Set<Exam> getExams() {
-    return Set.copyOf(exams);
+    return studentExams.stream()
+        .map(StudentExam::getExam)
+        .collect(java.util.stream.Collectors.toSet());
+  }
+
+  public StudentExam getStudentExam(Exam exam) {
+    return studentExams.stream()
+        .filter(studentExam -> studentExam.getExam().equals(exam))
+        .findFirst()
+        .orElse(null);
   }
 
   public String getFullName() {

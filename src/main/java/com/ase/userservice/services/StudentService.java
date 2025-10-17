@@ -36,16 +36,16 @@ public class StudentService {
 
   @Transactional(readOnly = true)
   public Student getStudentByStudentId(String studentId) {
-    return studentRepository.findByStudentId(studentId)
+    return studentRepository.findByMatriculationId(studentId)
         .orElseThrow(() -> new NotFoundException(
             "Student with matriculation number " + studentId + " not found"
         ));
   }
 
   public Student createStudent(Student student) {
-    if (studentRepository.existsByStudentId(student.getStudentId())) {
+    if (studentRepository.existsByMatriculationId(student.getMatriculationId())) {
       throw new IllegalArgumentException(
-          "Student with matriculation number " + student.getStudentId() + " already exists"
+          "Student with matriculation number " + student.getMatriculationId() + " already exists"
       );
     }
     if (studentRepository.existsByEmail(student.getEmail())) {
@@ -113,7 +113,7 @@ public class StudentService {
 
   @Transactional(readOnly = true)
   public List<ExamResponse> getExamsForStudent(String studentId) {
-    Student student = studentRepository.findByStudentIdWithExams(studentId)
+    Student student = studentRepository.findByMatriculationIdWithExams(studentId)
         .orElseThrow(() -> new NotFoundException("Student not found"));
 
     return student.getExams().stream()

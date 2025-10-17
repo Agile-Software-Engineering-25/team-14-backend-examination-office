@@ -19,7 +19,7 @@ public record StudentResponse(
   public static StudentResponse from(Student student) {
     return new StudentResponse(
         student.getId(),
-        student.getStudentId(),
+        student.getMatriculationId(),
         student.getFirstName(),
         student.getLastName(),
         student.getEmail(),
