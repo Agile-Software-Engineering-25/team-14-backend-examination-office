@@ -70,18 +70,32 @@ public class StudentService {
    * Fügt einen Studenten zu einer Prüfung hinzu
    */
   public boolean addStudentToExam(Long studentId, Long examId) {
-      Optional<Student> studentOpt = studentRepository.findById(studentId);
-      Optional<Exam> examOpt = examRepository.findById(examId);
+    Optional<Student> studentOpt = studentRepository.findById(studentId);
+    Optional<Exam> examOpt = examRepository.findById(examId);
 
-      if (studentOpt.isPresent() && examOpt.isPresent()) {
-          Student student = studentOpt.get();
-          Exam exam = examOpt.get();
+    if (studentOpt.isPresent() && examOpt.isPresent()) {
+      Student student = studentOpt.get();
+      Exam exam = examOpt.get();
 
-          student.addExam(exam);
-          studentRepository.save(student);
+      boolean alreadyLinked = student.getExams() != null && student.getExams().stream()
+          .anyMatch(e -> e != null && e.getId() != null && e.getId().equals(exam.getId()));
+      if (alreadyLinked) {
           return true;
       }
-      return false;
+
+      student.addExam(exam);
+      if (exam.getStudents() != null && !exam.getStudents().contains(student)) {
+          exam.getStudents().add(student);
+      }
+
+      try {
+          studentRepository.saveAndFlush(student);
+          return true;
+      } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+          return true;
+      }
+    }
+    return false;
   }
 
   /**
