@@ -1,5 +1,7 @@
 package com.ase.userservice.services;
 
+import com.ase.userservice.controllers.NotFoundException;
+import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
@@ -122,4 +124,15 @@ public class StudentService {
   public List<Student> getStudentsByExamId(String examId) {
       return studentRepository.findStudentsByExamId(examId);
   }
+
+  @Transactional(readOnly = true)
+  public List<ExamResponse> getExamsForStudent(String studentId) {
+    Student student = studentRepository.findByStudentIdWithExams(studentId)
+        .orElseThrow(() -> new NotFoundException("Student not found"));
+
+    return student.getExams().stream()
+        .map(ExamService::toResponse)
+        .toList();
+  }
+
 }
