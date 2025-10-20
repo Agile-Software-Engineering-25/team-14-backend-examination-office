@@ -167,6 +167,6 @@ public class Exam {
     this.duration = req.duration();
     this.attemptNumber = req.attemptNumber();
     this.fileUploadRequired = req.fileUploadRequired();
-    this.tools = List.copyOf(req.tools());
+    this.tools = new ArrayList<>(req.tools());
   }
 }
