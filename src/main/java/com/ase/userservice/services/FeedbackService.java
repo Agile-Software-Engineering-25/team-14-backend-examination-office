@@ -44,8 +44,24 @@ public class FeedbackService {
     return executeApiCall("/feedback/for-lecturer/" + lecturerUuid);
   }
 
+  @Transactional(readOnly = true)
   public List<FeedbackDto> getFeedbackForExam(String examUuid) {
-    return executeApiCall("/feedback/for-exam/" + examUuid);
+    List<FeedbackDto> feedbacks = executeApiCall("/feedback/for-exam/" + examUuid);
+
+    Exam exam = examRepository.findById(examUuid)
+        .orElseThrow(() -> new IllegalArgumentException("Exam not found: " + examUuid));
+
+    return feedbacks.stream()
+        .peek(fb -> {
+          StudentExamId id = new StudentExamId(fb.getStudentUuid(), exam.getId());
+          StudentExam studentExam = studentExamRepository.findById(id).orElse(null);
+          if (studentExam != null) {
+            fb.setState(studentExam.getState());
+          } else {
+            fb.setState(ExamState.EXAM_GRADED);
+          }
+        })
+        .collect(Collectors.toList());
   }
 
   @Transactional

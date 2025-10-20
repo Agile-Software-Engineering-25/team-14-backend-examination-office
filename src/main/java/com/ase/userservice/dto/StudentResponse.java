@@ -7,7 +7,7 @@ import com.ase.userservice.entities.Student;
 
 public record StudentResponse(
     String id,
-    String studentId,
+    String matriculationId,
     String firstName,
     String lastName,
     String email,

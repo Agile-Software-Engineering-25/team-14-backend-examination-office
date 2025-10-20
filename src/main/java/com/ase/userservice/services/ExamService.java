@@ -1,24 +1,27 @@
 package com.ase.userservice.services;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.CreateExamRequest;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
+import com.ase.userservice.entities.ExamState;
 import com.ase.userservice.repositories.ExamRepository;
+import com.ase.userservice.repositories.StudentExamRepository;
 
 @Service
 @Transactional
 public class ExamService {
 
   private final ExamRepository repo;
-  private FeedbackService feedbackService;
+  private final StudentExamRepository studentExamRepository;
 
-  public ExamService(ExamRepository repo, FeedbackService feedbackService) {
+  public ExamService(ExamRepository repo, StudentExamRepository studentExamRepository) {
     this.repo = repo;
-    this.feedbackService = feedbackService;
+    this.studentExamRepository = studentExamRepository;
   }
 
   public ExamResponse create(CreateExamRequest req) {
@@ -55,16 +58,28 @@ public class ExamService {
 
   @Transactional(readOnly = true)
   public ExamResponse get(String id) {
-    Integer submissionCount = feedbackService.getFeedbackForExam(id).size();
-    return repo.findById(id)
-        .map(exam -> ExamService.toResponse(exam, submissionCount))
-        .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
+    Optional<Exam> e = repo.findById(id);
+    if (e.isEmpty()) {
+      throw new NotFoundException("Exam " + id + " not found");
+    }
+
+    Integer submissionCount = studentExamRepository.countByExamAndState(
+        e.get(),
+        ExamState.EXAM_GRADED
+    );
+
+    return ExamService.toResponse(e.get(), submissionCount);
   }
 
   @Transactional(readOnly = true)
   public List<ExamResponse> list() {
     return repo.findAll().stream()
-        .map(ExamService::toResponse)
+        .map(exam -> ExamService.toResponse(exam,
+            studentExamRepository.countByExamAndState(
+                exam,
+                ExamState.EXAM_GRADED
+            )
+        ))
         .toList();
   }
 

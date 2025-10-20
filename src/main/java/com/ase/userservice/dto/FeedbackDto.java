@@ -14,10 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackDto {
-  private String studentId;
-  private String studentName;
-  private String examId;
-  private String examTitle;
+  @JsonProperty("examState")
   private ExamState state;
 
   @JsonProperty("gradedAt")
