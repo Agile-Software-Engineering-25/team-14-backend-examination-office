@@ -1,9 +1,7 @@
 package com.ase.userservice.controllers;
 
 import java.util.List;
-import com.ase.userservice.entities.Student;
-import com.ase.userservice.services.StudentService;
-import org.apache.catalina.connector.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,33 +11,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.ase.userservice.dto.CreateExamRequest;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.services.ExamService;
+import com.ase.userservice.services.StudentService;
 import jakarta.validation.Valid;
 
 @CrossOrigin(
     origins = "http://localhost:5173",
     allowedHeaders = "*",
     allowCredentials = "true",
-    maxAge = 3600,
-    methods = {
-        RequestMethod.GET,
-        RequestMethod.POST,
-        RequestMethod.PUT,
-        RequestMethod.DELETE,
-        RequestMethod.OPTIONS
-    }
+    maxAge = 3600
 )
 @RestController
 @RequestMapping("/api/exams")
 public class ExamController {
 
   private final ExamService examService;
-  private  final StudentService studentService;
+  private final StudentService studentService;
 
   public ExamController(ExamService examService, StudentService studentService) {
     this.examService = examService;
@@ -47,22 +38,19 @@ public class ExamController {
   }
 
   @PostMapping
-  public ResponseEntity<ExamResponse> createExam(
-      @Valid @RequestBody CreateExamRequest req,
-      UriComponentsBuilder uri) {
+  public ResponseEntity<ExamResponse> createExam(@Valid @RequestBody CreateExamRequest req,
+                                                 UriComponentsBuilder uri) {
     ExamResponse created = examService.create(req);
     return ResponseEntity
-        .created(
-            uri.path("/api/exams/{id}")
-                .buildAndExpand(created.id())
-                .toUri())
+        .created(uri.path("/api/exams/{id}")
+            .buildAndExpand(created.id())
+            .toUri())
         .body(created);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<ExamResponse> updateExam(
-      @PathVariable String id,
-      @Valid @RequestBody CreateExamRequest req) {
+  public ResponseEntity<ExamResponse> updateExam(@PathVariable String id,
+                                                 @Valid @RequestBody CreateExamRequest req) {
     return ResponseEntity.ok(examService.update(id, req));
   }
 
@@ -79,16 +67,18 @@ public class ExamController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteExam(@PathVariable String id) {
     examService.delete(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
-  @GetMapping("/student/{id}")
-  public ResponseEntity<List<ExamResponse>> listStudentExams(@PathVariable String id) {
-    return ResponseEntity.ok(studentService.getExamsForStudent(id));
+  @GetMapping("/student/{studentId}")
+  public ResponseEntity<List<ExamResponse>> listStudentExams(@PathVariable String studentId) {
+    return ResponseEntity.ok(studentService.getExamsForStudent(studentId));
   }
 
-  @GetMapping("/lecturer/{id}")
-  public ResponseEntity<List<ExamResponse>> listLecturerExams(@PathVariable String id) {
-    return ResponseEntity.internalServerError().build();
+  @GetMapping("/lecturer/{lecturerId}")
+  public ResponseEntity<String> listLecturerExams(@PathVariable String lecturerId) {
+    // TODO
+    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+        .body("Listing exams for lecturer is not implemented yet.");
   }
 }

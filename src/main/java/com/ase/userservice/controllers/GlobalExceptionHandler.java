@@ -12,19 +12,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<?> handleValidation(
-      MethodArgumentNotValidException ex) {
+  public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
 
     Map<String, String> errors = new HashMap<>();
     for (var fe : ex.getBindingResult().getFieldErrors()) {
       errors.putIfAbsent(fe.getField(), fe.getDefaultMessage());
     }
 
-    return ResponseEntity.badRequest()
-        .body(
-            Map.of(
-                "message", "Validation failed",
-                "errors", errors));
+    return ResponseEntity.badRequest().body(
+        Map.of("message", "Validation failed", "errors", errors)
+    );
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
@@ -34,13 +31,11 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(IllegalStateException.class)
   public ResponseEntity<?> handleIllegalState(IllegalStateException ex) {
-    return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body(Map.of("message", ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
   }
 
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<?> handleNotFound(NotFoundException ex) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(Map.of("message", ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
   }
 }

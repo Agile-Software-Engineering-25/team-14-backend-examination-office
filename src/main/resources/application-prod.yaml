@@ -3,6 +3,9 @@ server:
     context-path: ${SERVER_SERVLET_CONTEXT_PATH:/exa-grad/exam-service}
 
 spring:
+  flyway:
+    placeholders:
+      interval30: "NOW() + INTERVAL '30 days'"
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${DB_HOST:postgres.db}:${DB_PORT:5432}/${DB_NAME:appdb}}
     username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:app}}

@@ -1,32 +1,47 @@
 package com.ase.userservice.repositories;
 
-import com.ase.userservice.entities.Student;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
+import com.ase.userservice.entities.Student;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, String> {
 
-  Optional<Student> findByStudentId(String studentId);
+  Optional<Student> findByMatriculationId(String matriculationId);
 
-  @Query("SELECT s FROM Student s LEFT JOIN FETCH s.exams WHERE s.studentId = :studentId")
-  Optional<Student> findByStudentIdWithExams(@Param("studentId") String studentId);
+  @Query("""
+      SELECT DISTINCT s
+      FROM Student s
+      LEFT JOIN FETCH s.studentExams se
+      LEFT JOIN FETCH se.exam e
+      WHERE s.matriculationId = :matriculationId
+      """)
+  Optional<Student> findByMatriculationIdWithExams(
+      @Param("matriculationId") String matriculationId
+  );
 
   Optional<Student> findByEmail(String email);
 
-    List<Student> findByStudyGroup(String studyGroup);
+  List<Student> findByStudyGroup(String studyGroup);
 
-    List<Student> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-        String firstName, String lastName);
+  List<Student> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+      String firstName, String lastName
+  );
 
-    @Query("SELECT s FROM Student s JOIN s.exams e WHERE e.id = :examId")
-    List<Student> findStudentsByExamId(@Param("examId") String examId);
+  @Query("""
+      SELECT DISTINCT s
+      FROM Student s
+      JOIN s.studentExams se
+      JOIN se.exam e
+      WHERE e.id = :examId
+      """)
+  List<Student> findStudentsByExamId(@Param("examId") String examId);
 
-    boolean existsByStudentId(String studentId);
+  boolean existsByMatriculationId(String matriculationId);
 
-    boolean existsByEmail(String email);
+  boolean existsByEmail(String email);
 }
