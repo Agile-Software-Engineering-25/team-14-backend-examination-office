@@ -57,7 +57,8 @@ public class FeedbackService {
           StudentExam studentExam = studentExamRepository.findById(id).orElse(null);
           if (studentExam != null) {
             fb.setState(studentExam.getState());
-          } else {
+          }
+          else {
             fb.setState(ExamState.EXAM_GRADED);
           }
         })
