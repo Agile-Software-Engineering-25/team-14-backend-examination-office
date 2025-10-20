@@ -2,7 +2,9 @@ package com.ase.userservice.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import jakarta.persistence.*;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -28,8 +30,8 @@ import jakarta.persistence.UniqueConstraint;
 public class Exam {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String id;
 
   @Column(nullable = false, length = 160)
   private String title;
@@ -64,7 +66,7 @@ public class Exam {
   @Column(nullable = false)
   private boolean fileUploadRequired;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(
       name = "exam_tools",
       joinColumns = @JoinColumn(name = "exam_id")
@@ -74,11 +76,14 @@ public class Exam {
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-    name = "exam_students",
-    joinColumns = @JoinColumn(name = "exam_id"),
-    inverseJoinColumns = @JoinColumn(name = "student_id")
+      name = "exam_students",
+      joinColumns = @JoinColumn(name = "exam_id"),
+      inverseJoinColumns = @JoinColumn(name = "student_id"),
+      uniqueConstraints = {
+          @UniqueConstraint(columnNames = {"exam_id", "student_id"})
+      }
   )
-  private List<Student> students = new ArrayList<>();
+  private Set<Student> students = new HashSet<>();
 
   protected Exam() {}
 
@@ -112,7 +117,7 @@ public class Exam {
     }
   }
 
-  public Long getId() {
+  public String getId() {
     return id;
   }
 
@@ -211,23 +216,36 @@ public class Exam {
   public void setTools(List<String> tools) {
     this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
   }
-  public List<Student> getStudents() { return students; }
-  public void setStudents(List<Student> students) {
-    this.students = students != null ? new ArrayList<>(students) : new ArrayList<>();
+  public Set<Student> getStudents() { return students; }
+  public void setStudents(Set<Student> students) {
+    this.students = students != null ? new HashSet<>(students) : new HashSet<>();
   }
 
   // Hilfsmethoden für die Beziehung zu Studenten
   public void addStudent(Student student) {
-    if (!this.students.contains(student)) {
-      this.students.add(student);
+    if (student == null) return;
+    if (this.students.add(student)) {
       student.getExams().add(this);
     }
   }
 
   public void removeStudent(Student student) {
-    if (this.students.contains(student)) {
-      this.students.remove(student);
+    if (student == null) return;
+    if (this.students.remove(student)) {
       student.getExams().remove(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Exam other = (Exam) o;
+    return id != null && id.equals(other.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
   }
 }

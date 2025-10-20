@@ -63,13 +63,13 @@ public class ExamController {
 
   @PutMapping("/{id}")
   public ResponseEntity<ExamResponse> updateExam(
-      @PathVariable Long id,
+      @PathVariable String id,
       @Valid @RequestBody CreateExamRequest req) {
     return ResponseEntity.ok(examService.update(id, req));
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ExamResponse> getExam(@PathVariable Long id) {
+  public ResponseEntity<ExamResponse> getExam(@PathVariable String id) {
     return ResponseEntity.ok(examService.get(id));
   }
 
@@ -79,18 +79,14 @@ public class ExamController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteExam(@PathVariable String id) {
     examService.delete(id);
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/student/{id}")
   public ResponseEntity<List<ExamResponse>> listStudentExams(@PathVariable String id) {
-    Student student = studentService.getStudentByStudentId(id).orElse(null);
-    if (student == null)
-      return ResponseEntity.notFound().build();
-
-    return ResponseEntity.ok(student.getExams().stream().map(ExamService::toResponse).toList());
+    return ResponseEntity.ok(studentService.getExamsForStudent(id));
   }
 
   @GetMapping("/lecturer/{id}")

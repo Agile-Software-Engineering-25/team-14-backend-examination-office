@@ -48,7 +48,7 @@ public class ExamService {
   }
 
   @Transactional
-  public ExamResponse update(Long id, CreateExamRequest req) {
+  public ExamResponse update(String id, CreateExamRequest req) {
     req.validateBusinessRules();
 
     Exam exam = repo.findById(id)
@@ -96,7 +96,7 @@ public class ExamService {
   }
 
   @Transactional(readOnly = true)
-  public ExamResponse get(Long id) {
+  public ExamResponse get(String id) {
     Exam exam = repo.findById(id)
         .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
     return toResponse(exam);
@@ -108,7 +108,7 @@ public class ExamService {
   }
 
   @Transactional
-  public void delete(Long id) {
+  public void delete(String id) {
     repo.deleteById(id);
   }
 }

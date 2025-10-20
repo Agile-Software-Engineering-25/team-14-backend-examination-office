@@ -1,5 +1,7 @@
 package com.ase.userservice.dto;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -22,16 +24,19 @@ public class CreateStudentRequest {
 
   private Integer semester;
 
+  private LocalDate dateOfBirth;
+
   // Konstruktoren
   public CreateStudentRequest() {}
 
   public CreateStudentRequest(String studentId, String firstName, String lastName,
-                             String email, String studyGroup, Integer semester) {
+                             String email, String studyGroup, Integer semester, LocalDate dateOfBirth) {
       this.studentId = studentId;
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
       this.studyGroup = studyGroup;
+      this.dateOfBirth = dateOfBirth;
       this.semester = semester;
   }
 
@@ -82,5 +87,13 @@ public class CreateStudentRequest {
 
   public void setSemester(Integer semester) {
       this.semester = semester;
+  }
+
+  public LocalDate getDateOfBirth() {
+    return dateOfBirth;
+  }
+
+  public void setDateOfBirth(LocalDate dateOfBirth) {
+    this.dateOfBirth = dateOfBirth;
   }
 }

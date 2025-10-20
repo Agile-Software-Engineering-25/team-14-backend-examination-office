@@ -1,25 +1,17 @@
 package com.ase.userservice.entities;
 
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "students")
 public class Student {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String id;
 
   @Column(nullable = false, unique = true, length = 20)
   private String studentId; // Matrikelnummer
@@ -43,35 +35,25 @@ public class Student {
   private LocalDate dateOfBirth;
 
   @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
-  private List<Exam> exams = new ArrayList<>();
+  private Set<Exam> exams = new HashSet<>();
 
   // Konstruktoren
   protected Student() {}
 
     public Student(String studentId, String firstName, String lastName,
                    String email,
-                   String studyGroup, Integer semester) {
+                   String studyGroup, Integer semester, LocalDate dateofBirth) {
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.studyGroup = studyGroup;
         this.semester = semester;
-    }
-    
-    public Student(String studentId, String firstName, String lastName,
-                   String email, String studyGroup, Integer semester, LocalDate dateOfBirth) {
-        this.studentId = studentId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.studyGroup = studyGroup;
-        this.semester = semester;
-        this.dateOfBirth = dateOfBirth;
+        this.dateOfBirth = dateofBirth;
     }
 
   // Getter und Setter
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -131,30 +113,40 @@ public class Student {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public List<Exam> getExams() {
+    public Set<Exam> getExams() {
         return exams;
     }
 
-    public void setExams(List<Exam> exams) {
-        this.exams = exams != null ? new ArrayList<>(exams) : new ArrayList<>();
+    public void setExams(Set<Exam> exams) {
+        this.exams = exams != null ? new HashSet<>(exams) : new HashSet<>();
     }
 
     // Hilfsmethoden für die Beziehung
     public void addExam(Exam exam) {
-        if (!this.exams.contains(exam)) {
-            this.exams.add(exam);
-            exam.getStudents().add(this);
-        }
+        if (exam == null) return;
+        // Inverse side: nur lokale Menge pflegen. Owning side ist Exam.students
+        this.exams.add(exam);
     }
 
     public void removeExam(Exam exam) {
-        if (this.exams.contains(exam)) {
-            this.exams.remove(exam);
-            exam.getStudents().remove(this);
-        }
+        if (exam == null) return;
+        this.exams.remove(exam);
     }
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student other = (Student) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
