@@ -44,7 +44,7 @@ public class CertificateService {
         context.setVariable("location", LOCATION);
         
         context.setVariable("studentName", student.getFullName());
-        context.setVariable("studentId", student.getStudentId());
+        context.setVariable("studentId", student.getMatriculationId());
         
         String translatedProgram = translateStudyProgram(student.getStudyGroup());
         context.setVariable("studyProgram", translatedProgram);
@@ -65,24 +65,17 @@ public class CertificateService {
         
         String programCode = studyGroup.replaceAll("[0-9\\-]+$", "").trim().toUpperCase();
 
-        switch (programCode) {
-            case "BIT":
-                return "Informatik";
-            case "MIT":
-                return "Informatik";
-            case "BWL":
-                return "Betriebswirtschaftslehre";
-            case "WI":
-                return "Wirtschaftsinformatik";
-            case "WING":
-                return "Wirtschaftsingenieurwesen";
-            case "MB":
-                return "Maschinenbau";
-            case "ET":
-                return "Elektrotechnik";
-            default:
-                return programCode; 
-        }
+        // placeholder translations
+        return switch (programCode) {
+            case "BIT" -> "Informatik";
+            case "MIT" -> "Informatik";
+            case "BWL" -> "Betriebswirtschaftslehre";
+            case "WI" -> "Wirtschaftsinformatik";
+            case "WING" -> "Wirtschaftsingenieurwesen";
+            case "MB" -> "Maschinenbau";
+            case "ET" -> "Elektrotechnik";
+            default -> programCode;
+        };
     }
     
     private String formatDateOrDefault(LocalDate date, String defaultValue) {

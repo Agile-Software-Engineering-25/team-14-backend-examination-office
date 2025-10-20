@@ -2,8 +2,6 @@ package com.ase.userservice.controllers;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -174,12 +172,10 @@ public class StudentController {
   @GetMapping("/{id}/certificate")
   public ResponseEntity<byte[]> generateCertificate(@PathVariable String id) {
       
-      Optional<Student> studentOpt = studentService.getStudentById(id);
-      if (!studentOpt.isPresent()) {
+      Student student = studentService.getStudentById(id);
+      if (student == null) {
           throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
       }
-      
-      Student student = studentOpt.get();
 
       String studyGroup = student.getStudyGroup();
       String degreeType = "Bachelor"; 

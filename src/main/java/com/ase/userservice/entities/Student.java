@@ -66,14 +66,24 @@ public class Student {
   private Set<StudentExam> studentExams = new HashSet<>();
 
   public Student(String matriculationId, String firstName, String lastName,
-                 String email, String studyGroup, Integer semester, LocalDate dateofBirth) {
+                 String email, String studyGroup, Integer semester) {
     this.matriculationId = matriculationId;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.studyGroup = studyGroup;
     this.semester = semester;
-    this.dateofBirth = dateofBirth;
+  }
+
+  public Student(String matriculationId, String firstName, String lastName,
+                 String email, String studyGroup, Integer semester, LocalDate dateOfBirth) {
+    this.matriculationId = matriculationId;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.studyGroup = studyGroup;
+    this.semester = semester;
+    this.dateOfBirth = dateOfBirth;
   }
 
   public void addExam(Exam exam) {
