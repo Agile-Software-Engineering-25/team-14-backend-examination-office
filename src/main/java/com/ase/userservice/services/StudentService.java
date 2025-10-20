@@ -1,138 +1,123 @@
 package com.ase.userservice.services;
 
+import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class StudentService {
 
-  @Autowired
-  private StudentRepository studentRepository;
+  private final StudentRepository studentRepository;
+  private final ExamRepository examRepository;
 
-  @Autowired
-  private ExamRepository examRepository;
+  public StudentService(StudentRepository studentRepository, ExamRepository examRepository) {
+    this.studentRepository = studentRepository;
+    this.examRepository = examRepository;
+  }
 
+  @Transactional(readOnly = true)
   public List<Student> getAllStudents() {
-      return studentRepository.findAll();
+    return studentRepository.findAll();
   }
 
-  public Optional<Student> getStudentById(String id) {
-      return studentRepository.findById(id);
+  @Transactional(readOnly = true)
+  public Student getStudentById(String id) {
+    return studentRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Student with ID " + id + " not found"));
   }
 
-  public Optional<Student> getStudentByStudentId(String studentId) {
-      return studentRepository.findByStudentId(studentId);
+  @Transactional(readOnly = true)
+  public Student getStudentByStudentId(String studentId) {
+    return studentRepository.findByMatriculationId(studentId)
+        .orElseThrow(() -> new NotFoundException(
+            "Student with matriculation number " + studentId + " not found"
+        ));
   }
 
   public Student createStudent(Student student) {
-      // Prüfen ob Matrikelnummer oder E-Mail bereits existiert
-      if (studentRepository.existsByStudentId(student.getStudentId())) {
-          throw new IllegalArgumentException("Student mit Matrikelnummer " + student.getStudentId() + " existiert bereits");
-      }
-      if (studentRepository.existsByEmail(student.getEmail())) {
-          throw new IllegalArgumentException("Student mit E-Mail " + student.getEmail() + " existiert bereits");
-      }
-      return studentRepository.save(student);
+    if (studentRepository.existsByMatriculationId(student.getMatriculationId())) {
+      throw new IllegalArgumentException(
+          "Student with matriculation number " + student.getMatriculationId() + " already exists"
+      );
+    }
+    if (studentRepository.existsByEmail(student.getEmail())) {
+      throw new IllegalArgumentException(
+          "Student with email " + student.getEmail() + " already exists"
+      );
+    }
+    return studentRepository.save(student);
   }
 
   public Student updateStudent(Student student) {
-      if (student.getId() == null) {
-          throw new IllegalArgumentException("Student ID darf nicht null sein für Update");
-      }
-      return studentRepository.save(student);
+    if (student.getId() == null) {
+      throw new IllegalArgumentException("Student ID cannot be null for update");
+    }
+    Student existing = getStudentById(student.getId());
+    existing.updateFrom(student);
+    return existing;
   }
 
   public void deleteStudent(String id) {
-      if (!studentRepository.existsById(id)) {
-          throw new IllegalArgumentException("Student mit ID " + id + " existiert nicht");
-      }
-      studentRepository.deleteById(id);
+    Student student = getStudentById(id);
+    studentRepository.delete(student);
   }
 
+  @Transactional(readOnly = true)
   public List<Student> searchStudentsByName(String searchTerm) {
-      return studentRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-          searchTerm, searchTerm);
+    return studentRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+        searchTerm,
+        searchTerm
+    );
   }
 
+  @Transactional(readOnly = true)
   public List<Student> getStudentsByStudyGroup(String studyGroup) {
-      return studentRepository.findByStudyGroup(studyGroup);
+    return studentRepository.findByStudyGroup(studyGroup);
   }
 
-  /**
-   * Fügt einen Studenten zu einer Prüfung hinzu
-   */
-  public boolean addStudentToExam(String studentId, String examId) {
-    Optional<Student> studentOpt = studentRepository.findById(studentId);
-    Optional<Exam> examOpt = examRepository.findById(examId);
+  public void addStudentToExam(String studentId, String examId) {
+    Student student = getStudentById(studentId);
+    Exam exam = examRepository.findById(examId)
+        .orElseThrow(() -> new NotFoundException("Exam with ID " + examId + " not found"));
 
-    if (studentOpt.isPresent() && examOpt.isPresent()) {
-      Student student = studentOpt.get();
-      Exam exam = examOpt.get();
-
-      boolean alreadyLinked = student.getExams() != null && student.getExams().stream()
-          .anyMatch(e -> e != null && e.getId() != null && e.getId().equals(exam.getId()));
-      if (alreadyLinked) {
-          return true;
-      }
-
-      student.addExam(exam);
-      if (exam.getStudents() != null && !exam.getStudents().contains(student)) {
-          exam.getStudents().add(student);
-      }
-
-      try {
-          studentRepository.saveAndFlush(student);
-          return true;
-      } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-          return true;
-      }
+    student.addExam(exam);
+    try {
+      studentRepository.save(student);
     }
-    return false;
+    catch (DataIntegrityViolationException ignored) {
+      // safe to ignore duplicate relationship
+    }
   }
 
-  /**
-   * Entfernt einen Studenten von einer Prüfung
-   */
-  public boolean removeStudentFromExam(String studentId, String examId) {
-      Optional<Student> studentOpt = studentRepository.findById(studentId);
-      Optional<Exam> examOpt = examRepository.findById(examId);
+  public void removeStudentFromExam(String studentId, String examId) {
+    Student student = getStudentById(studentId);
+    Exam exam = examRepository.findById(examId)
+        .orElseThrow(() -> new NotFoundException("Exam with ID " + examId + " not found"));
 
-      if (studentOpt.isPresent() && examOpt.isPresent()) {
-          Student student = studentOpt.get();
-          Exam exam = examOpt.get();
-
-          student.removeExam(exam);
-          studentRepository.save(student);
-          return true;
-      }
-      return false;
+    student.removeExam(exam);
+    studentRepository.save(student);
   }
 
-  /**
-   * Holt alle Studenten einer bestimmten Prüfung
-   */
+  @Transactional(readOnly = true)
   public List<Student> getStudentsByExamId(String examId) {
-      return studentRepository.findStudentsByExamId(examId);
+    return studentRepository.findStudentsByExamId(examId);
   }
 
   @Transactional(readOnly = true)
   public List<ExamResponse> getExamsForStudent(String studentId) {
-    Student student = studentRepository.findByStudentIdWithExams(studentId)
+    Student student = studentRepository.findByMatriculationIdWithExams(studentId)
         .orElseThrow(() -> new NotFoundException("Student not found"));
 
     return student.getExams().stream()
         .map(ExamService::toResponse)
         .toList();
   }
-
 }

@@ -42,137 +42,133 @@ import jakarta.validation.Valid;
       RequestMethod.OPTIONS
   }
 )
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
 
-  @Autowired
-  private StudentService studentService;
+  private final StudentService studentService;
+
+  public StudentController(StudentService studentService) {
+    this.studentService = studentService;
+  }
   
   @Autowired
   private CertificateService certificateService;
 
   @GetMapping
   public ResponseEntity<List<StudentResponse>> getAllStudents() {
-      List<Student> students = studentService.getAllStudents();
-      List<StudentResponse> response = students.stream()
-              .map(StudentResponse::new)
-              .collect(Collectors.toList());
-      return ResponseEntity.ok(response);
+    List<StudentResponse> response = studentService
+        .getAllStudents()
+        .stream()
+        .map(StudentResponse::from)
+        .toList();
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<StudentResponse> getStudentById(@PathVariable String id) {
-      Optional<Student> student = studentService.getStudentById(id);
-      if (student.isPresent()) {
-          return ResponseEntity.ok(new StudentResponse(student.get()));
-      }
-      throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
+    Student student = studentService.getStudentById(id);
+    return ResponseEntity.ok(StudentResponse.from(student));
   }
 
   @GetMapping("/studentId/{studentId}")
   public ResponseEntity<StudentResponse> getStudentByStudentId(@PathVariable String studentId) {
-      Optional<Student> student = studentService.getStudentByStudentId(studentId);
-      if (student.isPresent()) {
-          return ResponseEntity.ok(new StudentResponse(student.get()));
-      }
-      throw new NotFoundException("Student mit Matrikelnummer " + studentId + " nicht gefunden");
+    Student student = studentService.getStudentByStudentId(studentId);
+    return ResponseEntity.ok(StudentResponse.from(student));
   }
 
   @PostMapping
-  public ResponseEntity<StudentResponse> createStudent(@Valid @RequestBody CreateStudentRequest request) {
-      try {
-          Student student = new Student(
-                  request.getStudentId(),
-                  request.getFirstName(),
-                  request.getLastName(),
-                  request.getEmail(),
-                  request.getStudyGroup(),
-                  request.getSemester(),
-                  request.getDateOfBirth()
-          );
+  public ResponseEntity<StudentResponse> createStudent(
+      @Valid @RequestBody CreateStudentRequest request
+  ) {
+    Student student = new Student(
+        request.getStudentId(),
+        request.getFirstName(),
+        request.getLastName(),
+        request.getEmail(),
+        request.getStudyGroup(),
+        request.getSemester()
+    );
 
-          Student savedStudent = studentService.createStudent(student);
-          return ResponseEntity.status(HttpStatus.CREATED)
-                  .body(new StudentResponse(savedStudent));
-      } catch (IllegalArgumentException e) {
-          return ResponseEntity.badRequest().build();
-      }
+    Student saved = studentService.createStudent(student);
+    return ResponseEntity.status(HttpStatus.CREATED).body(StudentResponse.from(saved));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<StudentResponse> updateStudent(@PathVariable String id,
-                                                     @Valid @RequestBody CreateStudentRequest request) {
-      Optional<Student> existingStudentOpt = studentService.getStudentById(id);
-      if (!existingStudentOpt.isPresent()) {
-          throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
-      }
-
-      Student existingStudent = existingStudentOpt.get();
-      existingStudent.setStudentId(request.getStudentId());
-      existingStudent.setFirstName(request.getFirstName());
-      existingStudent.setLastName(request.getLastName());
-      existingStudent.setEmail(request.getEmail());
-      existingStudent.setStudyGroup(request.getStudyGroup());
-      existingStudent.setSemester(request.getSemester());
-
-      Student updatedStudent = studentService.updateStudent(existingStudent);
-      return ResponseEntity.ok(new StudentResponse(updatedStudent));
+  public ResponseEntity<StudentResponse> updateStudent(
+      @PathVariable String id,
+      @Valid @RequestBody CreateStudentRequest request) {
+    Student existing = studentService.getStudentById(id);
+    existing.updateFrom(new Student(
+        request.getStudentId(),
+        request.getFirstName(),
+        request.getLastName(),
+        request.getEmail(),
+        request.getStudyGroup(),
+        request.getSemester()
+    ));
+    Student updated = studentService.updateStudent(existing);
+    return ResponseEntity.ok(StudentResponse.from(updated));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteStudent(@PathVariable String id) {
-      try {
-          studentService.deleteStudent(id);
-          return ResponseEntity.noContent().build();
-      } catch (IllegalArgumentException e) {
-          throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
-      }
+    studentService.deleteStudent(id);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/search")
   public ResponseEntity<List<StudentResponse>> searchStudents(@RequestParam String q) {
-      List<Student> students = studentService.searchStudentsByName(q);
-      List<StudentResponse> response = students.stream()
-              .map(StudentResponse::new)
-              .collect(Collectors.toList());
-      return ResponseEntity.ok(response);
+    List<StudentResponse> response = studentService
+        .searchStudentsByName(q)
+        .stream()
+        .map(StudentResponse::from)
+        .toList();
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/study-group/{studyGroup}")
-  public ResponseEntity<List<StudentResponse>> getStudentsByStudyGroup(@PathVariable String studyGroup) {
-      List<Student> students = studentService.getStudentsByStudyGroup(studyGroup);
-      List<StudentResponse> response = students.stream()
-              .map(StudentResponse::new)
-              .collect(Collectors.toList());
-      return ResponseEntity.ok(response);
+  public ResponseEntity<List<StudentResponse>> getStudentsByStudyGroup(
+      @PathVariable String studyGroup
+  ) {
+    List<StudentResponse> response = studentService
+        .getStudentsByStudyGroup(studyGroup)
+        .stream()
+        .map(StudentResponse::from)
+        .toList();
+
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/{studentId}/exams/{examId}")
-  public ResponseEntity<String> addStudentToExam(@PathVariable String studentId, @PathVariable String examId) {
-      boolean success = studentService.addStudentToExam(studentId, examId);
-      if (success) {
-          return ResponseEntity.ok("Student erfolgreich zur Prüfung hinzugefügt");
-      }
-      return ResponseEntity.badRequest().body("Fehler beim Hinzufügen des Studenten zur Prüfung");
+  public ResponseEntity<String> addStudentToExam(
+      @PathVariable String studentId,
+      @PathVariable String examId
+  ) {
+    studentService.addStudentToExam(studentId, examId);
+    return ResponseEntity.ok("Student erfolgreich zur Prüfung hinzugefügt");
   }
 
   @DeleteMapping("/{studentId}/exams/{examId}")
-  public ResponseEntity<String> removeStudentFromExam(@PathVariable String studentId, @PathVariable String examId) {
-      boolean success = studentService.removeStudentFromExam(studentId, examId);
-      if (success) {
-          return ResponseEntity.ok("Student erfolgreich von der Prüfung entfernt");
-      }
-      return ResponseEntity.badRequest().body("Fehler beim Entfernen des Studenten von der Prüfung");
+  public ResponseEntity<String> removeStudentFromExam(
+      @PathVariable String studentId,
+      @PathVariable String examId
+  ) {
+    studentService.removeStudentFromExam(studentId, examId);
+    return ResponseEntity.ok("Student erfolgreich von der Prüfung entfernt");
   }
 
   @GetMapping("/exam/{examId}")
   public ResponseEntity<List<StudentResponse>> getStudentsByExamId(@PathVariable String examId) {
-      List<Student> students = studentService.getStudentsByExamId(examId);
-      List<StudentResponse> response = students.stream()
-              .map(StudentResponse::new)
-              .collect(Collectors.toList());
-      return ResponseEntity.ok(response);
+    List<StudentResponse> response = studentService
+        .getStudentsByExamId(examId)
+        .stream()
+        .map(StudentResponse::from)
+        .toList();
+
+    return ResponseEntity.ok(response);
   }
   
   @GetMapping("/{id}/certificate")

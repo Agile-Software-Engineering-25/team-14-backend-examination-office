@@ -1,4 +1,10 @@
 spring:
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    placeholders:
+      interval30: "DATEADD('DAY', 30, NOW())"
   datasource:
     url: jdbc:h2:mem:examdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
     username: sa
@@ -23,3 +29,8 @@ spring:
 server:
   error:
     include-message: always
+
+app:
+  apis:
+    feedback-service:
+      baseurl: https://sau-portal.de/exa-grad/grading-service/api/v1
