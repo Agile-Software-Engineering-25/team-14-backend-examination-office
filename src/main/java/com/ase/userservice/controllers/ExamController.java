@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import com.ase.userservice.dto.CreateExamRequest;
 import com.ase.userservice.dto.ExamResponse;
-import com.ase.userservice.entities.Student;
 import com.ase.userservice.services.ExamService;
 import com.ase.userservice.services.StudentService;
 import jakarta.validation.Valid;
