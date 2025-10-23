@@ -6,5 +6,6 @@ public enum ExamState {
   EXAM_GRADED, // Exam is awaiting confirmation by the examination office
   EXAM_ACCEPTED, // Exam submission has been accepted by examination office
   EXAM_REJECTED, // Exam submission has been rejected by examination office
-  EXAM_EXPIRED // Exam date has passed without submission
+  EXAM_EXPIRED, // Exam date has passed without submission
+  EXAM_UNSPECIFIED
 }

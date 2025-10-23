@@ -1,6 +1,7 @@
 package com.ase.userservice.repositories;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.ase.userservice.entities.Exam;
@@ -18,4 +19,6 @@ public interface ExamRepository extends JpaRepository<Exam, String> {
       LocalDateTime examDate,
       Integer attemptNumber,
       String excludedId);
+
+  List<Exam> findAllByModuleCode(String moduleCode);
 }

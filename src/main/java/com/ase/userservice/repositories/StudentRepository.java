@@ -18,10 +18,10 @@ public interface StudentRepository extends JpaRepository<Student, String> {
       FROM Student s
       LEFT JOIN FETCH s.studentExams se
       LEFT JOIN FETCH se.exam e
-      WHERE s.matriculationId = :matriculationId
+      WHERE s.id = :studentId
       """)
-  Optional<Student> findByMatriculationIdWithExams(
-      @Param("matriculationId") String matriculationId
+  Optional<Student> findByIdWithExams(
+      @Param("studentId") String studentId
   );
 
   Optional<Student> findByEmail(String email);
