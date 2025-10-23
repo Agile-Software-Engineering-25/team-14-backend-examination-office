@@ -2,6 +2,7 @@ package com.ase.userservice.entities;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.time.LocalDate;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,6 +53,9 @@ public class Student {
 
   @Column
   private Integer semester;
+  
+  @Column
+  private LocalDate dateOfBirth;
 
   @OneToMany(
       mappedBy = "student",
@@ -69,6 +73,17 @@ public class Student {
     this.email = email;
     this.studyGroup = studyGroup;
     this.semester = semester;
+  }
+
+  public Student(String matriculationId, String firstName, String lastName,
+                 String email, String studyGroup, Integer semester, LocalDate dateOfBirth) {
+    this.matriculationId = matriculationId;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.studyGroup = studyGroup;
+    this.semester = semester;
+    this.dateOfBirth = dateOfBirth;
   }
 
   public void addExam(Exam exam) {

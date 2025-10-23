@@ -1,7 +1,12 @@
 package com.ase.userservice.controllers;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,15 +16,31 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.ase.userservice.dto.CreateStudentRequest;
 import com.ase.userservice.dto.StudentResponse;
 import com.ase.userservice.entities.Student;
+import com.ase.userservice.services.CertificateService;
 import com.ase.userservice.services.StudentService;
+
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true", maxAge = 3600)
+@CrossOrigin(
+  origins = "http://localhost:5173",
+  allowedHeaders = "*",
+  allowCredentials = "true",
+  maxAge = 3600,
+  methods = { RequestMethod.GET,
+      RequestMethod.POST,
+      RequestMethod.PUT,
+      RequestMethod.DELETE,
+      RequestMethod.OPTIONS
+  }
+)
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -29,6 +50,9 @@ public class StudentController {
   public StudentController(StudentService studentService) {
     this.studentService = studentService;
   }
+  
+  @Autowired
+  private CertificateService certificateService;
 
   @GetMapping
   public ResponseEntity<List<StudentResponse>> getAllStudents() {
@@ -143,5 +167,42 @@ public class StudentController {
         .toList();
 
     return ResponseEntity.ok(response);
+  }
+  
+  @GetMapping("/{id}/certificate")
+  public ResponseEntity<byte[]> generateCertificate(@PathVariable String id) {
+      
+      Student student = studentService.getStudentById(id);
+      if (student == null) {
+          throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
+      }
+
+      String studyGroup = student.getStudyGroup();
+      String degreeType = "Bachelor"; 
+      
+      if (studyGroup != null && !studyGroup.isEmpty()) {
+          if (studyGroup.toUpperCase().startsWith("M")) {
+              degreeType = "Master";
+          }
+      }
+      
+      try {
+          byte[] pdfContent = certificateService.generateCertificate(student, degreeType);
+
+          String filename = student.getLastName().toLowerCase() + "_" + 
+                            degreeType.toLowerCase() + "_zeugnis.pdf";
+
+          HttpHeaders headers = new HttpHeaders();
+          headers.setContentType(MediaType.APPLICATION_PDF);
+          headers.setContentDispositionFormData("attachment", filename);
+          headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+          
+          return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+          
+      } catch (IOException e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                  .body(("Fehler bei der Generierung des Zeugnisses: " + e.getMessage())
+                  .getBytes());
+      }
   }
 }
