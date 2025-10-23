@@ -1,7 +1,6 @@
 package com.ase.userservice.controllers;
 
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -75,10 +74,8 @@ public class ExamController {
     return ResponseEntity.ok(studentService.getExamsForStudent(studentId));
   }
 
-  @GetMapping("/lecturer/{lecturerId}")
-  public ResponseEntity<String> listLecturerExams(@PathVariable String lecturerId) {
-    // TODO
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-        .body("Listing exams for lecturer is not implemented yet.");
+  @GetMapping("/module/{moduleCode}")
+  public ResponseEntity<List<ExamResponse>> listModuleExams(@PathVariable String moduleCode) {
+    return ResponseEntity.ok(examService.listByModuleCode(moduleCode));
   }
 }

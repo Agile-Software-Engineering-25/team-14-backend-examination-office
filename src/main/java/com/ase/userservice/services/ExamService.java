@@ -83,6 +83,18 @@ public class ExamService {
         .toList();
   }
 
+  @Transactional
+  public List<ExamResponse> listByModuleCode(String moduleCode) {
+    return repo.findAllByModuleCode(moduleCode).stream()
+        .map(exam -> ExamService.toResponse(exam,
+            studentExamRepository.countByExamAndState(
+                exam,
+                ExamState.EXAM_GRADED
+            )
+        ))
+        .toList();
+  }
+
   public void delete(String id) {
     if (!repo.existsById(id)) {
       throw new NotFoundException("Exam " + id + " not found");

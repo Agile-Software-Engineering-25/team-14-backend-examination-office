@@ -113,7 +113,7 @@ public class StudentService {
 
   @Transactional(readOnly = true)
   public List<ExamResponse> getExamsForStudent(String studentId) {
-    Student student = studentRepository.findByMatriculationIdWithExams(studentId)
+    Student student = studentRepository.findByIdWithExams(studentId)
         .orElseThrow(() -> new NotFoundException("Student not found"));
 
     return student.getExams().stream()
