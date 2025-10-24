@@ -89,10 +89,10 @@ public class Exam {
   @OneToMany(
       mappedBy = "exam",
       fetch = FetchType.LAZY,
-      cascade = CascadeType.ALL,
+      cascade = {},
       orphanRemoval = true
   )
-  private Set<StudentExam> studentExams = new HashSet<>();
+  private Set<StudentExam> studentExams = new java.util.HashSet<>();
 
   public Exam(String title,
               String moduleCode,
@@ -121,13 +121,16 @@ public class Exam {
   }
 
   public void addStudent(Student student) {
-    if (student != null) {
-      StudentExam studentExam = new StudentExam();
-      studentExam.setStudent(student);
-      studentExam.setExam(this);
-      studentExams.add(studentExam);
-      student.getStudentExams().add(studentExam);
-    }
+    if (student == null) return;
+    if (getStudentExam(student) != null) return;
+
+    StudentExam studentExam = new StudentExam();
+    studentExam.setStudent(student);
+    studentExam.setExam(this);
+    studentExam.setId(new StudentExamId(student.getId(), this.getId()));
+
+    this.getStudentExams().add(studentExam);
+    student.getStudentExams().add(studentExam);
   }
 
   public void removeStudent(Student student) {

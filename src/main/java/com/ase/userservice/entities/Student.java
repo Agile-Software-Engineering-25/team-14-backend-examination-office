@@ -87,13 +87,17 @@ public class Student {
   }
 
   public void addExam(Exam exam) {
-    if (exam != null) {
-      StudentExam studentExam = new StudentExam();
-      studentExam.setStudent(this);
-      studentExam.setExam(exam);
-      studentExams.add(studentExam);
-      exam.getStudentExams().add(studentExam);
-    }
+    if (exam == null) return;
+    if (getStudentExam(exam) != null) return;
+
+    StudentExam studentExam = new StudentExam();
+    studentExam.setStudent(this);
+    studentExam.setExam(exam);
+    // explizit den Schlüssel setzen
+    studentExam.setId(new StudentExamId(this.getId(), exam.getId()));
+
+    this.getStudentExams().add(studentExam);
+    exam.getStudentExams().add(studentExam);
   }
 
   public void removeExam(Exam exam) {

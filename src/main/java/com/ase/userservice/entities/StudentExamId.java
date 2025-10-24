@@ -1,14 +1,16 @@
 package com.ase.userservice.entities;
 
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Embeddable
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class StudentExamId implements Serializable {
-  private String student;
-  private String exam;
+  private String studentId;
+  private String examId;
 }
