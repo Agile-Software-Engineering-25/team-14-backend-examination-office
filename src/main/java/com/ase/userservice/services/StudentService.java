@@ -2,8 +2,8 @@ package com.ase.userservice.services;
 
 import java.util.List;
 import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
@@ -19,7 +19,9 @@ public class StudentService {
   private final ExamRepository examRepository;
   private final EntityManager em;
 
-  public StudentService(StudentRepository studentRepository, ExamRepository examRepository, EntityManager em) {
+  public StudentService(StudentRepository studentRepository,
+                        ExamRepository examRepository,
+                        EntityManager em) {
     this.studentRepository = studentRepository;
     this.examRepository = examRepository;
     this.em = em;

@@ -119,8 +119,12 @@ public class Exam {
   }
 
   public void addStudent(Student student) {
-    if (student == null) return;
-    if (getStudentExam(student) != null) return;
+    if (student == null) {
+      return;
+    }
+    if (getStudentExam(student) != null) {
+      return;
+    }
 
     StudentExam studentExam = new StudentExam();
     studentExam.setStudent(student);
