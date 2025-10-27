@@ -4,9 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -44,7 +44,8 @@ public class CertificateService {
     try (ZipOutputStream zos = new ZipOutputStream(baos)) {
       
       for (Student student : students) {
-        String degreeType = student.getStudyGroup() != null &&
+        String degreeType = student.getStudyGroup() != null 
+          &&
             student.getStudyGroup().toUpperCase().startsWith("M") ? "Master" : "Bachelor";
 
         byte[] pdfBytes = generateCertificate(student, degreeType);
