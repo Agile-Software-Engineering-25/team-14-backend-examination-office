@@ -31,7 +31,8 @@ CREATE TABLE students (
                           last_name VARCHAR(100) NOT NULL,
                           email VARCHAR(150) NOT NULL UNIQUE,
                           study_group VARCHAR(100),
-                          semester INT
+                          semester INT,
+                          date_of_birth DATE
 );
 
 -- 2. Create student_exams join table
