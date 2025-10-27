@@ -45,7 +45,7 @@ public class CertificateService {
       
       for (Student student : students) {
         String degreeType = student.getStudyGroup() != null 
-          &&
+              &&
             student.getStudyGroup().toUpperCase().startsWith("M") ? "Master" : "Bachelor";
 
         byte[] pdfBytes = generateCertificate(student, degreeType);
