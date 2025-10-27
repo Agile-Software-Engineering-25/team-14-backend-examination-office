@@ -2,6 +2,7 @@ package com.ase.userservice.controllers;
 
 import java.io.IOException;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.ase.userservice.dto.CreateStudentRequest;
 import com.ase.userservice.dto.StudentResponse;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.services.CertificateService;
 import com.ase.userservice.services.StudentService;
+
 import jakarta.validation.Valid;
 
 @CrossOrigin(
@@ -200,6 +203,34 @@ public class StudentController {
     catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(("Fehler bei der Generierung des Zeugnisses: " + e.getMessage())
+              .getBytes());
+    }
+  }
+
+  @GetMapping("/{studyGroup}/certificates")
+  public ResponseEntity<byte[]> generateCertificatesForStudyGroup(
+      @PathVariable String studyGroup) {
+
+    List<Student> students = studentService.getStudentsByStudyGroup(studyGroup);
+    if (students.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    try {
+      byte[] pdfContent = certificateService.generateCertificates(students);
+
+      String filename = studyGroup.toLowerCase() + "_zeugnisse.zip";
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+      headers.setContentDispositionFormData("attachment", filename);
+      headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+      return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(("Fehler bei der Generierung der Zeugnisse: " + e.getMessage())
               .getBytes());
     }
   }

@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -34,6 +37,30 @@ public class CertificateService {
     String html = templateEngine.process(templateName, context);
 
     return generatePdfFromHtml(html);
+  }
+
+  public byte[] generateCertificates(List<Student> students) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+      
+      for (Student student : students) {
+        String degreeType = student.getStudyGroup() != null &&
+            student.getStudyGroup().toUpperCase().startsWith("M") ? "Master" : "Bachelor";
+
+        byte[] pdfBytes = generateCertificate(student, degreeType);
+        String fileName = String.format("%s_%s_Zeugnis.pdf",
+            student.getMatriculationId(),
+            student.getFullName().replace(" ", "_"));
+        
+        // Füge das PDF zur ZIP-Datei hinzu
+        ZipEntry entry = new ZipEntry(fileName);
+        zos.putNextEntry(entry);
+        zos.write(pdfBytes);
+        zos.closeEntry();
+      }
+    }
+
+    return baos.toByteArray();
   }
 
   private Context createCertificateContext(Student student) {
@@ -70,7 +97,7 @@ public class CertificateService {
         .trim()
         .toUpperCase();
 
-    // placeholder translations
+    // Muss später noch angepasst werden, wenn klar ist, welche Studiengänge es gibt
     return switch (programCode) {
       case "BIT" -> "Informatik";
       case "MIT" -> "Informatik";
