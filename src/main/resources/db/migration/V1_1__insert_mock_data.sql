@@ -1,11 +1,11 @@
 -- Insert Students
-INSERT INTO students (id, matriculation_id, first_name, last_name, email, study_group, semester)
+INSERT INTO students (id, matriculation_id, first_name, last_name, email, study_group, semester, date_of_birth)
 VALUES
-    ('d1c27c4f-e7d7-45b8-bc4e-6f634e7c5e8f', 'st1', 'John', 'Doe', 'john.doe@uni.com', 'CS-01', 3),
-    ('f2a26e3f-3b50-44ac-a7f9-02fe3b41cf6a', 'st2', 'Jane', 'Smith', 'jane.smith@uni.com', 'CS-01', 3),
-    ('7283a092-2b64-4bfa-bf92-4242448b740a', 'st3', 'Alice', 'Johnson', 'alice.j@uni.com', 'CS-02', 5),
-    ('a9f5d8b5-2632-42b5-8520-1db4010fc80d', 'st4', 'Bob', 'Wilson', 'bob.w@uni.com', 'CS-02', 5),
-    ('be7f4234-cd28-4b29-9b09-5d1a38d3c67a', 'st5', 'Charlie', 'Brown', 'charlie.b@uni.com', 'CS-03', 1);
+    ('d1c27c4f-e7d7-45b8-bc4e-6f634e7c5e8f', 'st1', 'John', 'Doe', 'john.doe@uni.com', 'CS-01', 3, '2000-01-15'),
+    ('f2a26e3f-3b50-44ac-a7f9-02fe3b41cf6a', 'st2', 'Jane', 'Smith', 'jane.smith@uni.com', 'CS-01', 3, '2000-02-20'),
+    ('7283a092-2b64-4bfa-bf92-4242448b740a', 'st3', 'Alice', 'Johnson', 'alice.j@uni.com', 'CS-02', 5, '1999-11-30'),
+    ('a9f5d8b5-2632-42b5-8520-1db4010fc80d', 'st4', 'Bob', 'Wilson', 'bob.w@uni.com', 'CS-02', 5, '1998-05-10'),
+    ('be7f4234-cd28-4b29-9b09-5d1a38d3c67a', 'st5', 'Charlie', 'Brown', 'charlie.b@uni.com', 'CS-03', 1, '2001-08-25');
 
 -- Insert Exams
 INSERT INTO exams (

@@ -203,4 +203,33 @@ public class StudentController {
               .getBytes());
     }
   }
+
+  @GetMapping("/{studyGroup}/certificates")
+  public ResponseEntity<byte[]> generateCertificatesForStudyGroup(
+      @PathVariable String studyGroup) {
+
+    List<Student> students = studentService.getStudentsByStudyGroup(studyGroup);
+    if (students.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    try {
+      byte[] pdfContent = certificateService.generateCertificates(students);
+
+      String filename = studyGroup.toLowerCase() + "_zeugnisse.zip";
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+      headers.setContentDispositionFormData("attachment", filename);
+      headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+      return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+
+    } 
+    catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(("Fehler bei der Generierung der Zeugnisse: " + e.getMessage())
+              .getBytes());
+    }
+  }
 }
