@@ -16,7 +16,11 @@ INSERT INTO exams (
       ('550e8400-e29b-41d4-a716-446655440002', 'Algorithm Analysis', 'AL201', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 'EXAM_OPEN'),
       ('550e8400-e29b-41d4-a716-446655440003', 'Network Security', 'NS301', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 'EXAM_OPEN'),
       ('550e8400-e29b-41d4-a716-446655440004', 'Machine Learning', 'ML401', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 'EXAM_OPEN'),
-      ('550e8400-e29b-41d4-a716-446655440005', 'Web Development', 'WD201', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 'EXAM_OPEN');
+      ('550e8400-e29b-41d4-a716-446655440005', 'Web Development', 'WD201', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 'EXAM_OPEN'),
+      ('550e8400-e29b-41d4-a716-446655440006', 'Operating Systems', 'OS202', ${interval30}, 'Room B201', 'KLAUSUR', 'WS2025', 6, 100, 90, 1, TRUE, 'EXAM_OPEN'),
+      ('550e8400-e29b-41d4-a716-446655440007', 'Software Architecture', 'SA310', ${interval30}, 'Room B202', 'KLAUSUR', 'WS2025', 6, 100, 90, 1, TRUE, 'EXAM_OPEN'),
+      ('550e8400-e29b-41d4-a716-446655440008', 'Human-Computer Interaction', 'HCI150', ${interval30}, 'Room B203', 'PRAESENTATION', 'WS2025', 4, 100, 60, 1, TRUE, 'EXAM_OPEN'),
+      ('550e8400-e29b-41d4-a716-446655440009', 'Cryptography', 'CRY330', ${interval30}, 'Room B204', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 'EXAM_OPEN');
 
 -- Insert Student-Exam relationships
 INSERT INTO student_exams (student_id, exam_id, state)
