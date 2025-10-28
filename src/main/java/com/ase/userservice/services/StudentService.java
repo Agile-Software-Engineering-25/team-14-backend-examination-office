@@ -1,7 +1,6 @@
 package com.ase.userservice.services;
 
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
@@ -10,6 +9,7 @@ import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentRepository;
+import jakarta.persistence.EntityManager;
 
 @Service
 @Transactional
@@ -17,10 +17,14 @@ public class StudentService {
 
   private final StudentRepository studentRepository;
   private final ExamRepository examRepository;
+  private final EntityManager em;
 
-  public StudentService(StudentRepository studentRepository, ExamRepository examRepository) {
+  public StudentService(StudentRepository studentRepository,
+                        ExamRepository examRepository,
+                        EntityManager em) {
     this.studentRepository = studentRepository;
     this.examRepository = examRepository;
+    this.em = em;
   }
 
   @Transactional(readOnly = true)
@@ -83,24 +87,19 @@ public class StudentService {
     return studentRepository.findByStudyGroup(studyGroup);
   }
 
+  @Transactional
   public void addStudentToExam(String studentId, String examId) {
-    Student student = getStudentById(studentId);
-    Exam exam = examRepository.findById(examId)
-        .orElseThrow(() -> new NotFoundException("Exam with ID " + examId + " not found"));
-
+    // leichte Optimierung: getReference vermeidet unnötige SELECTs
+    Student student = em.getReference(Student.class, studentId);
+    Exam exam = em.getReference(Exam.class, examId);
     student.addExam(exam);
-    try {
-      studentRepository.save(student);
-    }
-    catch (DataIntegrityViolationException ignored) {
-      // safe to ignore duplicate relationship
-    }
+    studentRepository.save(student);
   }
 
+  @Transactional
   public void removeStudentFromExam(String studentId, String examId) {
-    Student student = getStudentById(studentId);
-    Exam exam = examRepository.findById(examId)
-        .orElseThrow(() -> new NotFoundException("Exam with ID " + examId + " not found"));
+    Student student = em.getReference(Student.class, studentId);
+    Exam exam = em.getReference(Exam.class, examId);
 
     student.removeExam(exam);
     studentRepository.save(student);

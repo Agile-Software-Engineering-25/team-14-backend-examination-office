@@ -1,12 +1,13 @@
 package com.ase.userservice.entities;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,15 +21,18 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "student_exams")
-@IdClass(StudentExamId.class)
 public class StudentExam {
-  @Id
-  @ManyToOne
+
+  @EmbeddedId
+  private StudentExamId id = new StudentExamId();
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("studentId")
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
 
-  @Id
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("examId")
   @JoinColumn(name = "exam_id", nullable = false)
   private Exam exam;
 
