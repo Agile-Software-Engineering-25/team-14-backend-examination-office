@@ -1,9 +1,12 @@
 package com.ase.userservice.services;
 
 import java.util.List;
+
 import jakarta.persistence.EntityManager;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
