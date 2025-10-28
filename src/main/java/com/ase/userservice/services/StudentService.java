@@ -3,13 +3,13 @@ package com.ase.userservice.services;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.persistence.EntityManager;
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentRepository;
+import jakarta.persistence.EntityManager;
 
 @Service
 @Transactional
