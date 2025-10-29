@@ -25,6 +25,7 @@ public class FeedbackService {
   private final StudentExamRepository studentExamRepository;
   private final StudentRepository studentRepository;
   private final ExamRepository examRepository;
+  private final BitfrostService bitfrostService;
 
   @Value("${app.apis.feedback-service.baseurl}")
   private String feedbackServiceBaseUrl;
@@ -67,15 +68,31 @@ public class FeedbackService {
 
   @Transactional
   public void acceptFeedback(String examUuid, String studentUuid) {
+    StudentExamStateDto studentExamStateDto = StudentExamStateDto
+        .builder()
+        .examUuid(examUuid)
+        .studentUuid(studentUuid)
+        .state(ExamState.EXAM_ACCEPTED)
+        .build();
+
     setStudentExamState(examUuid, studentUuid, ExamState.EXAM_ACCEPTED);
+    bitfrostService.sendRequest("feedback:approve", studentExamStateDto);
   }
 
   @Transactional
   public void rejectFeedback(String examUuid, String studentUuid) {
+    StudentExamStateDto studentExamStateDto = StudentExamStateDto
+        .builder()
+        .examUuid(examUuid)
+        .studentUuid(studentUuid)
+        .state(ExamState.EXAM_REJECTED)
+        .build();
+
     setStudentExamState(examUuid, studentUuid, ExamState.EXAM_REJECTED);
+    bitfrostService.sendRequest("feedback:reject", studentExamStateDto);
   }
 
-  private void setStudentExamState(String examUuid, String studentUuid, ExamState newState) {
+  public void setStudentExamState(String examUuid, String studentUuid, ExamState newState) {
     Student student = studentRepository.findById(studentUuid)
         .orElseThrow(() -> new IllegalArgumentException(
             "Student not found: " + studentUuid
