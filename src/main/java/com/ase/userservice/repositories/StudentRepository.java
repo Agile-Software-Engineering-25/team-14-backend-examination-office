@@ -15,12 +15,12 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
   Optional<Student> findByMatriculationId(String matriculationId);
 
   @Query("""
-      SELECT DISTINCT s
-      FROM Student s
-      LEFT JOIN FETCH s.studentExams se
-      LEFT JOIN FETCH se.exam e
-      WHERE s.id = :studentId
-      """)
+          SELECT DISTINCT s
+          FROM Student s
+          LEFT JOIN FETCH s.studentExams se
+          LEFT JOIN FETCH se.exam e
+          WHERE s.id = :studentId
+          """)
   Optional<Student> findByIdWithExams(
       @Param("studentId") UUID studentId
   );

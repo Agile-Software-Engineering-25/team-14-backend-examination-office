@@ -2,7 +2,6 @@ package com.ase.userservice.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 
 public record StudentResponse(
