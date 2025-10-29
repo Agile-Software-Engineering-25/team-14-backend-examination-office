@@ -2,6 +2,7 @@ package com.ase.userservice.controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,7 @@ public class StudentController {
 
   @GetMapping("/{id}")
   public ResponseEntity<StudentResponse> getStudentById(@PathVariable String id) {
-    Student student = studentService.getStudentById(id);
+    Student student = studentService.getStudentById(UUID.fromString(id));
     return ResponseEntity.ok(StudentResponse.from(student));
   }
 
@@ -94,7 +95,7 @@ public class StudentController {
   public ResponseEntity<StudentResponse> updateStudent(
       @PathVariable String id,
       @Valid @RequestBody CreateStudentRequest request) {
-    Student existing = studentService.getStudentById(id);
+    Student existing = studentService.getStudentById(UUID.fromString(id));
     existing.updateFrom(new Student(
         request.getStudentId(),
         request.getFirstName(),
@@ -169,7 +170,7 @@ public class StudentController {
   @GetMapping("/{id}/certificate")
   public ResponseEntity<byte[]> generateCertificate(@PathVariable String id) {
 
-    Student student = studentService.getStudentById(id);
+    Student student = studentService.getStudentById(UUID.fromString(id));
     if (student == null) {
       throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
     }
@@ -225,7 +226,7 @@ public class StudentController {
 
       return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
 
-    } 
+    }
     catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(("Fehler bei der Generierung der Zeugnisse: " + e.getMessage())

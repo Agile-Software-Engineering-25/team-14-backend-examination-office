@@ -42,17 +42,17 @@ public class CertificateService {
   public byte[] generateCertificates(List<Student> students) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-      
+
       for (Student student : students) {
-        String degreeType = student.getStudyGroup() != null 
-              &&
+        String degreeType = student.getStudyGroup() != null
+            &&
             student.getStudyGroup().toUpperCase().startsWith("M") ? "Master" : "Bachelor";
 
         byte[] pdfBytes = generateCertificate(student, degreeType);
         String fileName = String.format("%s_%s_Zeugnis.pdf",
             student.getMatriculationId(),
             student.getFullName().replace(" ", "_"));
-        
+
         // Füge das PDF zur ZIP-Datei hinzu
         ZipEntry entry = new ZipEntry(fileName);
         zos.putNextEntry(entry);

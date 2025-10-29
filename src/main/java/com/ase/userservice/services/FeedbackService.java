@@ -1,6 +1,7 @@
 package com.ase.userservice.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,12 +50,12 @@ public class FeedbackService {
   public List<FeedbackDto> getFeedbackForExam(String examUuid) {
     List<FeedbackDto> feedbacks = executeApiCall("/feedback/for-exam/" + examUuid);
 
-    Exam exam = examRepository.findById(examUuid)
+    Exam exam = examRepository.findById(UUID.fromString(examUuid))
         .orElseThrow(() -> new IllegalArgumentException("Exam not found: " + examUuid));
 
     return feedbacks.stream()
         .peek(fb -> {
-          StudentExamId id = new StudentExamId(fb.getStudentUuid(), exam.getId());
+          StudentExamId id = new StudentExamId(UUID.fromString(fb.getStudentUuid()), exam.getId());
           StudentExam studentExam = studentExamRepository.findById(id).orElse(null);
           if (studentExam != null) {
             fb.setState(studentExam.getState());
@@ -93,12 +94,12 @@ public class FeedbackService {
   }
 
   public void setStudentExamState(String examUuid, String studentUuid, ExamState newState) {
-    Student student = studentRepository.findById(studentUuid)
+    Student student = studentRepository.findById(UUID.fromString(studentUuid))
         .orElseThrow(() -> new IllegalArgumentException(
             "Student not found: " + studentUuid
         ));
 
-    Exam exam = examRepository.findById(examUuid)
+    Exam exam = examRepository.findById(UUID.fromString(examUuid))
         .orElseThrow(() -> new IllegalArgumentException(
             "Exam not found: " + examUuid
         ));
@@ -116,12 +117,12 @@ public class FeedbackService {
 
   @Transactional(readOnly = true)
   public StudentExamStateDto getStudentExamStatus(String examId, String studentId) {
-    Student student = studentRepository.findById(studentId)
+    Student student = studentRepository.findById(UUID.fromString(studentId))
         .orElseThrow(() -> new IllegalArgumentException(
             "Student not found: " + studentId
         ));
 
-    Exam exam = examRepository.findById(examId)
+    Exam exam = examRepository.findById(UUID.fromString(examId))
         .orElseThrow(() -> new IllegalArgumentException(
             "Exam not found: " + examId
         ));
@@ -135,8 +136,8 @@ public class FeedbackService {
         ));
 
     return StudentExamStateDto.builder()
-        .studentUuid(student.getId())
-        .examUuid(exam.getId())
+        .studentUuid(student.getId().toString())
+        .examUuid(exam.getId().toString())
         .state(studentExam.getState())
         .build();
   }

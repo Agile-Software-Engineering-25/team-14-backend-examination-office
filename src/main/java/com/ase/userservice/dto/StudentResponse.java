@@ -2,7 +2,6 @@ package com.ase.userservice.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 
 public record StudentResponse(
@@ -18,7 +17,7 @@ public record StudentResponse(
 ) {
   public static StudentResponse from(Student student) {
     return new StudentResponse(
-        student.getId(),
+        student.getId().toString(),
         student.getMatriculationId(),
         student.getFirstName(),
         student.getLastName(),
@@ -27,7 +26,7 @@ public record StudentResponse(
         student.getSemester(),
         student.getFullName(),
         student.getExams().stream()
-            .map(Exam::getId)
+            .map(exam -> exam.getId().toString())
             .collect(Collectors.toList())
     );
   }
