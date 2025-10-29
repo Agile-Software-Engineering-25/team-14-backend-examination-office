@@ -1,6 +1,7 @@
 package com.ase.userservice.services;
 
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
@@ -33,7 +34,7 @@ public class StudentService {
   }
 
   @Transactional(readOnly = true)
-  public Student getStudentById(String id) {
+  public Student getStudentById(UUID id) {
     return studentRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Student with ID " + id + " not found"));
   }
@@ -70,7 +71,7 @@ public class StudentService {
   }
 
   public void deleteStudent(String id) {
-    Student student = getStudentById(id);
+    Student student = getStudentById(UUID.fromString(id));
     studentRepository.delete(student);
   }
 
@@ -107,12 +108,12 @@ public class StudentService {
 
   @Transactional(readOnly = true)
   public List<Student> getStudentsByExamId(String examId) {
-    return studentRepository.findStudentsByExamId(examId);
+    return studentRepository.findStudentsByExamId(UUID.fromString(examId));
   }
 
   @Transactional(readOnly = true)
   public List<ExamResponse> getExamsForStudent(String studentId) {
-    Student student = studentRepository.findByIdWithExams(studentId)
+    Student student = studentRepository.findByIdWithExams(UUID.fromString(studentId))
         .orElseThrow(() -> new NotFoundException("Student not found"));
 
     return student.getExams().stream()

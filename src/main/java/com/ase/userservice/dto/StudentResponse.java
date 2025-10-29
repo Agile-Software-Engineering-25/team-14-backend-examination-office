@@ -18,7 +18,7 @@ public record StudentResponse(
 ) {
   public static StudentResponse from(Student student) {
     return new StudentResponse(
-        student.getId(),
+        student.getId().toString(),
         student.getMatriculationId(),
         student.getFirstName(),
         student.getLastName(),
@@ -27,7 +27,7 @@ public record StudentResponse(
         student.getSemester(),
         student.getFullName(),
         student.getExams().stream()
-            .map(Exam::getId)
+            .map(exam -> exam.getId().toString())
             .collect(Collectors.toList())
     );
   }

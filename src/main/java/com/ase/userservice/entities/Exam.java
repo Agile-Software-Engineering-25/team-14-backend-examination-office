@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import com.ase.userservice.dto.CreateExamRequest;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -43,7 +44,7 @@ public class Exam {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  private UUID id;
 
   @Column(nullable = false, length = 160)
   private String title;
@@ -79,7 +80,7 @@ public class Exam {
   @Column(nullable = false)
   private boolean fileUploadRequired;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "exam_tools", joinColumns = @JoinColumn(name = "exam_id"))
   @Column(name = "tool", nullable = false, length = 60)
   private List<String> tools = new ArrayList<>();

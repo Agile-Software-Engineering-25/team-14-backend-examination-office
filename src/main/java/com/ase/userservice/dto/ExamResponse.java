@@ -31,7 +31,7 @@ public record ExamResponse(
 
   public static ExamResponse from(Exam exam) {
     return new ExamResponse(
-        exam.getId(),
+        exam.getId().toString(),
         exam.getTitle(),
         exam.getModuleCode(),
         exam.getExamDate(),

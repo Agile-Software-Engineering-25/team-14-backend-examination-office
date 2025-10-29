@@ -1,6 +1,7 @@
 package com.ase.userservice.entities;
 
 import java.io.Serializable;
+import java.util.UUID;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentExamId implements Serializable {
-  private String studentId;
-  private String examId;
+  private UUID studentId;
+  private UUID examId;
 }
