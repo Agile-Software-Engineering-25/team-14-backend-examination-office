@@ -36,8 +36,8 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
   @Query("""
       SELECT DISTINCT s
       FROM Student s
-      JOIN s.studentExams se
-      JOIN se.exam e
+      JOIN FETCH s.studentExams se
+      JOIN FETCH se.exam e
       WHERE e.id = :examId
       """)
   List<Student> findStudentsByExamId(@Param("examId") UUID examId);
