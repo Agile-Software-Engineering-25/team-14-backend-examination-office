@@ -19,14 +19,15 @@ public record ExamResponse(
     Integer attemptNumber,
     boolean fileUploadRequired,
     List<String> tools,
-    Integer submissions
+    Integer submissions,
+    Integer weightPerCent
 ) {
   public ExamResponse(String id, String title, String moduleCode, LocalDateTime examDate,
                       String room, ExamType examType, String semester, Integer ects,
                       Integer maxPoints, Integer duration, Integer attemptNumber,
-                      boolean fileUploadRequired, List<String> tools) {
+                      boolean fileUploadRequired, List<String> tools, Integer weightPerCent) {
     this(id, title, moduleCode, examDate, room, examType, semester, ects, maxPoints,
-        duration, attemptNumber, fileUploadRequired, tools, 0);
+        duration, attemptNumber, fileUploadRequired, tools, 0, weightPerCent);
   }
 
   public static ExamResponse from(Exam exam) {
@@ -43,7 +44,8 @@ public record ExamResponse(
         exam.getDuration(),
         exam.getAttemptNumber(),
         exam.isFileUploadRequired(),
-        exam.getTools()
+        exam.getTools(),
+        exam.getWeightPerCent()
     );
   }
 }

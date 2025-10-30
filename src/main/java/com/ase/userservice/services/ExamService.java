@@ -40,7 +40,8 @@ public class ExamService {
         req.duration(),
         req.attemptNumber(),
         req.fileUploadRequired(),
-        req.tools()
+        req.tools(),
+        req.weightPerCent()
     );
 
     return toResponse(repo.save(exam));
@@ -143,7 +144,8 @@ public class ExamService {
         e.getAttemptNumber(),
         e.isFileUploadRequired(),
         e.getTools(),
-        submissionCount
+        submissionCount,
+        e.getWeightPerCent()
     );
   }
 }

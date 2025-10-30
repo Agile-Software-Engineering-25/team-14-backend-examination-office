@@ -8,29 +8,29 @@ VALUES
     ('be7f4234-cd28-4b29-9b09-5d1a38d3c67a', 'D726', 'Charlie', 'Brown', 'charlie.b@uni.com', 'CS-03', 1, '2001-08-25');
 
 INSERT INTO exams (
-    id, title, module_code, exam_date, room, exam_type, semester, ects, max_points, duration, attempt_number, file_upload_required
+    id, title, module_code, exam_date, room, exam_type, semester, ects, max_points, duration, attempt_number, file_upload_required, weight_per_cent
 ) VALUES
 
-      ('550e8400-e29b-41d4-a716-446655440000', 'Mathematik 1', 'MATH1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440001', 'Sprachkompetenz Englisch', 'ENG1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440002', 'Grundlagen der Informatik', 'INFO1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440003', 'Lerntechniken und wissenschaftliches Arbeiten', 'LWA', ${interval30}, 'Room A101', 'PRAESENTATION', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440004', 'Programmierung', 'PROG1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440005', 'Algorithmen und Datenstrukturen', 'ADS', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440006', 'Fortgeschrittene Programmierung', 'PROG2', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440007', 'Kommunikationskompetenz', 'KOMM', ${interval30}, 'Room A101', 'PRAESENTATION', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440008', 'Mathematik 2', 'MATH2', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440009', 'Theoretische Informatik', 'TI', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440010', 'Betriebssysteme', 'OS', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440011', 'Datenmodellierung und Datenbanken', 'DB', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440012', 'Informationssicherheit', 'SEC', ${interval30}, 'Room A101', 'MUENDLICH', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440013', 'Netze und verteilte Systeme', 'NET', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440014', 'Projektmanagement', 'PM', ${interval30}, 'Room A101', 'PROJEKT', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440015', 'Agile Software Engineering und Softwaretechnik', 'ASE', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440016', 'Data Analytics & Big Data', 'DABD', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440017', 'Human-Computer-Interaction', 'HCI', ${interval30}, 'Room A101', 'PRAESENTATION', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440018', 'Interkulturelle Kommunikation und heterogene Teams', 'IKHT', ${interval30}, 'Room A101', 'MUENDLICH', 'WS2025', 5, 100, 120, 1, TRUE),
-      ('550e8400-e29b-41d4-a716-446655440019', 'Technische Informatik und Rechnerarchitekturen und XAAS', 'TIRA', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE);
+      ('550e8400-e29b-41d4-a716-446655440000', 'Mathematik 1', 'MATH1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440001', 'Sprachkompetenz Englisch', 'ENG1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 20),
+      ('550e8400-e29b-41d4-a716-446655440002', 'Grundlagen der Informatik', 'INFO1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440003', 'Lerntechniken und wissenschaftliches Arbeiten', 'LWA', ${interval30}, 'Room A101', 'PRAESENTATION', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440004', 'Programmierung', 'PROG1', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440005', 'Algorithmen und Datenstrukturen', 'ADS', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440006', 'Fortgeschrittene Programmierung', 'PROG2', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 50),
+      ('550e8400-e29b-41d4-a716-446655440007', 'Kommunikationskompetenz', 'KOMM', ${interval30}, 'Room A101', 'PRAESENTATION', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440008', 'Mathematik 2', 'MATH2', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440009', 'Theoretische Informatik', 'TI', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440010', 'Betriebssysteme', 'OS', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440011', 'Datenmodellierung und Datenbanken', 'DB', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440012', 'Informationssicherheit', 'SEC', ${interval30}, 'Room A101', 'MUENDLICH', 'WS2025', 5, 100, 120, 1, TRUE, 80),
+      ('550e8400-e29b-41d4-a716-446655440013', 'Netze und verteilte Systeme', 'NET', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440014', 'Projektmanagement', 'PM', ${interval30}, 'Room A101', 'PROJEKT', 'WS2025', 5, 100, 120, 1, TRUE, 20),
+      ('550e8400-e29b-41d4-a716-446655440015', 'Agile Software Engineering und Softwaretechnik', 'ASE', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440016', 'Data Analytics & Big Data', 'DABD', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440017', 'Human-Computer-Interaction', 'HCI', ${interval30}, 'Room A101', 'PRAESENTATION', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440018', 'Interkulturelle Kommunikation und heterogene Teams', 'IKHT', ${interval30}, 'Room A101', 'MUENDLICH', 'WS2025', 5, 100, 120, 1, TRUE, 100),
+      ('550e8400-e29b-41d4-a716-446655440019', 'Technische Informatik und Rechnerarchitekturen und XAAS', 'TIRA', ${interval30}, 'Room A101', 'KLAUSUR', 'WS2025', 5, 100, 120, 1, TRUE, 100);
 
 INSERT INTO student_exams (student_id, exam_id, state)
 VALUES

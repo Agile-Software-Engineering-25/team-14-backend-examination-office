@@ -93,6 +93,8 @@ public class Exam {
   )
   private Set<StudentExam> studentExams = new java.util.HashSet<>();
 
+  private Integer weightPerCent;
+
   public Exam(String title,
               String moduleCode,
               LocalDateTime examDate,
@@ -104,7 +106,8 @@ public class Exam {
               Integer duration,
               Integer attemptNumber,
               boolean fileUploadRequired,
-              List<String> tools) {
+              List<String> tools,
+              Integer weightPerCent) {
     this.title = title;
     this.moduleCode = moduleCode;
     this.examDate = examDate;
@@ -117,6 +120,7 @@ public class Exam {
     this.attemptNumber = attemptNumber;
     this.fileUploadRequired = fileUploadRequired;
     this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
+    this.weightPerCent = weightPerCent;
   }
 
   public void addStudent(Student student) {
@@ -174,5 +178,6 @@ public class Exam {
     this.attemptNumber = req.attemptNumber();
     this.fileUploadRequired = req.fileUploadRequired();
     this.tools = new ArrayList<>(req.tools());
+    this.weightPerCent = req.weightPerCent();
   }
 }
