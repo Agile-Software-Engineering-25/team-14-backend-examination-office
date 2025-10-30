@@ -60,7 +60,7 @@ public class Student {
 
   @OneToMany(
       mappedBy = "student",
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       cascade = CascadeType.ALL,
       orphanRemoval = true
   )
