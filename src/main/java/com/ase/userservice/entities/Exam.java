@@ -87,7 +87,7 @@ public class Exam {
 
   @OneToMany(
       mappedBy = "exam",
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       cascade = {},
       orphanRemoval = true
   )
