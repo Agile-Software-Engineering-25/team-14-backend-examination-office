@@ -13,6 +13,7 @@ CREATE TABLE exams (
                        attempt_number INT NOT NULL,
                        file_upload_required BOOLEAN NOT NULL,
                        exam_state VARCHAR(20) NOT NULL DEFAULT 'EXAM_OPEN',
+                       weight_per_cent INT NOT NULL,
                        CONSTRAINT uk_exam_modcode_date_attempt UNIQUE(module_code, exam_date, attempt_number)
 );
 

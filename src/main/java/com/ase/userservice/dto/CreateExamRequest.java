@@ -3,6 +3,8 @@ package com.ase.userservice.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.ase.userservice.entities.ExamType;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -20,7 +22,8 @@ public record CreateExamRequest(@NotBlank String title,
                                 @NotNull @Positive Integer duration,
                                 @NotNull @Positive Integer attemptNumber,
                                 boolean fileUploadRequired,
-                                @NotNull @Size(max = 20) List<@NotBlank String> tools) {
+                                @NotNull @Size(max = 20) List<@NotBlank String> tools,
+                                @NotNull @Min(1) @Max(100) Integer weightPerCent) {
   public CreateExamRequest {
     if (tools != null && tools.stream().anyMatch(s -> s == null || s.isBlank())) {
       throw new IllegalArgumentException("tools must not contain blank items");
