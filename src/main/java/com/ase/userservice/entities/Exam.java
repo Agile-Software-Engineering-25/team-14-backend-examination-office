@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import com.ase.userservice.dto.CreateExamRequest;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -43,7 +44,7 @@ public class Exam {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  private UUID id;
 
   @Column(nullable = false, length = 160)
   private String title;
@@ -79,18 +80,20 @@ public class Exam {
   @Column(nullable = false)
   private boolean fileUploadRequired;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "exam_tools", joinColumns = @JoinColumn(name = "exam_id"))
   @Column(name = "tool", nullable = false, length = 60)
   private List<String> tools = new ArrayList<>();
 
   @OneToMany(
       mappedBy = "exam",
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       cascade = {},
       orphanRemoval = true
   )
   private Set<StudentExam> studentExams = new java.util.HashSet<>();
+
+  private Integer weightPerCent;
 
   public Exam(String title,
               String moduleCode,
@@ -103,7 +106,8 @@ public class Exam {
               Integer duration,
               Integer attemptNumber,
               boolean fileUploadRequired,
-              List<String> tools) {
+              List<String> tools,
+              Integer weightPerCent) {
     this.title = title;
     this.moduleCode = moduleCode;
     this.examDate = examDate;
@@ -116,6 +120,7 @@ public class Exam {
     this.attemptNumber = attemptNumber;
     this.fileUploadRequired = fileUploadRequired;
     this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
+    this.weightPerCent = weightPerCent;
   }
 
   public void addStudent(Student student) {
@@ -173,5 +178,6 @@ public class Exam {
     this.attemptNumber = req.attemptNumber();
     this.fileUploadRequired = req.fileUploadRequired();
     this.tools = new ArrayList<>(req.tools());
+    this.weightPerCent = req.weightPerCent();
   }
 }

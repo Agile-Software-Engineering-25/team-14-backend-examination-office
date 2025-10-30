@@ -2,6 +2,7 @@ package com.ase.userservice.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
@@ -39,14 +40,15 @@ public class ExamService {
         req.duration(),
         req.attemptNumber(),
         req.fileUploadRequired(),
-        req.tools()
+        req.tools(),
+        req.weightPerCent()
     );
 
     return toResponse(repo.save(exam));
   }
 
   public ExamResponse update(String id, CreateExamRequest req) {
-    Exam exam = repo.findById(id)
+    Exam exam = repo.findById(UUID.fromString(id))
         .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
 
     checkDuplicate(req.moduleCode(), req.examDate(), req.attemptNumber(), id);
@@ -58,7 +60,7 @@ public class ExamService {
 
   @Transactional(readOnly = true)
   public ExamResponse get(String id) {
-    Optional<Exam> e = repo.findById(id);
+    Optional<Exam> e = repo.findById(UUID.fromString(id));
     if (e.isEmpty()) {
       throw new NotFoundException("Exam " + id + " not found");
     }
@@ -96,10 +98,10 @@ public class ExamService {
   }
 
   public void delete(String id) {
-    if (!repo.existsById(id)) {
+    if (!repo.existsById(UUID.fromString(id))) {
       throw new NotFoundException("Exam " + id + " not found");
     }
-    repo.deleteById(id);
+    repo.deleteById(UUID.fromString(id));
   }
 
   private void checkDuplicate(String moduleCode,
@@ -115,7 +117,7 @@ public class ExamService {
         moduleCode,
         examDate,
         attemptNumber,
-        excludeId);
+        UUID.fromString(excludeId));
 
     if (exists) {
       throw new IllegalStateException(
@@ -129,7 +131,7 @@ public class ExamService {
 
   public static ExamResponse toResponse(Exam e, Integer submissionCount) {
     return new ExamResponse(
-        e.getId(),
+        e.getId().toString(),
         e.getTitle(),
         e.getModuleCode(),
         e.getExamDate(),
@@ -142,7 +144,8 @@ public class ExamService {
         e.getAttemptNumber(),
         e.isFileUploadRequired(),
         e.getTools(),
-        submissionCount
+        submissionCount,
+        e.getWeightPerCent()
     );
   }
 }

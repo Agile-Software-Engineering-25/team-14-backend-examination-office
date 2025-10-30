@@ -26,12 +26,12 @@ public class StudentExam {
   @EmbeddedId
   private StudentExamId id = new StudentExamId();
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("studentId")
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("examId")
   @JoinColumn(name = "exam_id", nullable = false)
   private Exam exam;

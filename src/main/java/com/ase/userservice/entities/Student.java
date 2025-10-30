@@ -3,6 +3,7 @@ package com.ase.userservice.entities;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ public class Student {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @ToString.Include
-  private String id;
+  private UUID id;
 
   @Column(nullable = false, unique = true, length = 20)
   @ToString.Include
@@ -59,7 +60,7 @@ public class Student {
 
   @OneToMany(
       mappedBy = "student",
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       cascade = CascadeType.ALL,
       orphanRemoval = true
   )
