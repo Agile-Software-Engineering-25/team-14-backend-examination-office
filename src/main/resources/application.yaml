@@ -34,7 +34,7 @@ app:
   apis:
     bitfrost:
       tag: ase-14-examoffice
-      secret: ${BITFROST_TOPIC_EXAM_OFFICE_SECRET}
+      secret: ${BITFROST_TOPIC_EXAM_OFFICE_SECRET:notaSecret}
       baseurl: https://bitfrost.sau-portal.de/api/v1/messages/publish
     feedback-service:
       baseurl: https://sau-portal.de/exa-grad/grading-service/api/v1
