@@ -3,30 +3,21 @@ package com.ase.userservice.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.web.reactive.function.client.WebClient;
-
-
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.dto.GroupDto;
 import com.ase.userservice.dto.GroupMemberDto;
-
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentRepository;
-
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -137,7 +128,8 @@ public class StudentService {
       if (m.getStudentUuid() != null && !m.getStudentUuid().isBlank()) {
         try {
           uuids.add(UUID.fromString(m.getStudentUuid()));
-        } catch (IllegalArgumentException ex) {
+        }
+        catch (IllegalArgumentException ex) {
         }
       }
     }
