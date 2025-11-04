@@ -140,8 +140,8 @@ public class StudentController {
 
   @PostMapping("/{studentId}/exams/{examId}")
   public ResponseEntity<String> addStudentToExam(
-      @PathVariable String studentId,
-      @PathVariable String examId
+      @PathVariable UUID studentId,
+      @PathVariable UUID examId
   ) {
     studentService.addStudentToExam(studentId, examId);
     return ResponseEntity.ok("Student erfolgreich zur Prüfung hinzugefügt");
@@ -149,8 +149,8 @@ public class StudentController {
 
   @DeleteMapping("/{studentId}/exams/{examId}")
   public ResponseEntity<String> removeStudentFromExam(
-      @PathVariable String studentId,
-      @PathVariable String examId
+      @PathVariable UUID studentId,
+      @PathVariable UUID examId
   ) {
     studentService.removeStudentFromExam(studentId, examId);
     return ResponseEntity.ok("Student erfolgreich von der Prüfung entfernt");

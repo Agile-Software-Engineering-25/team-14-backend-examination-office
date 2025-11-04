@@ -186,18 +186,18 @@ public class StudentService {
 
   @Transactional
 
-  public void addStudentToExam(String studentId, String examId) {
-    Student student = em.getReference(Student.class, UUID.fromString(studentId));
-    Exam exam = em.getReference(Exam.class, UUID.fromString(examId));
+  public void addStudentToExam(UUID studentId, UUID examId) {
+    Student student = em.getReference(Student.class, studentId);
+    Exam exam = em.getReference(Exam.class, examId);
     student.addExam(exam);
     studentRepository.save(student);
 
   }
 
   @Transactional
-  public void removeStudentFromExam(String studentId, String examId) {
-    Student student = em.getReference(Student.class, UUID.fromString(studentId));
-    Exam exam = em.getReference(Exam.class, UUID.fromString(examId));
+  public void removeStudentFromExam(UUID studentId, UUID examId) {
+    Student student = em.getReference(Student.class, studentId);
+    Exam exam = em.getReference(Exam.class, examId);
     student.removeExam(exam);
 
     studentRepository.save(student);
