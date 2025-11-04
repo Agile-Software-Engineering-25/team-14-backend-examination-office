@@ -1,0 +1,28 @@
+package com.ase.userservice.dto;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class GroupDto {
+
+  @JsonProperty("id")
+  private String id;
+
+
+  @JsonProperty("group")
+  private String group;
+
+
+  @JsonProperty("student")
+  private List<GroupMemberDto> student;
+
+}
+

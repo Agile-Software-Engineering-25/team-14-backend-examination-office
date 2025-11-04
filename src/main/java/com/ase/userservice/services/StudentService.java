@@ -1,15 +1,32 @@
 package com.ase.userservice.services;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.web.reactive.function.client.WebClient;
+
+
 import com.ase.userservice.controllers.NotFoundException;
 import com.ase.userservice.dto.ExamResponse;
+import com.ase.userservice.dto.GroupDto;
+import com.ase.userservice.dto.GroupMemberDto;
+
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.Student;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentRepository;
+
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -19,6 +36,15 @@ public class StudentService {
   private final StudentRepository studentRepository;
   private final ExamRepository examRepository;
   private final EntityManager em;
+
+  @Value("${app.apis.group-service.baseurl}")
+  private String groupServiceBaseUrl;
+
+  @Value("${app.apis.group-service.get-all-groups-path:/Group/getAllGroups}")
+  private String getAllGroupsPath;
+
+  private final WebClient groupWebClient = WebClient.create();
+
 
   public StudentService(StudentRepository studentRepository,
                         ExamRepository examRepository,
@@ -33,6 +59,7 @@ public class StudentService {
     return studentRepository.findAll();
   }
 
+
   @Transactional(readOnly = true)
   public Student getStudentById(UUID id) {
     return studentRepository.findById(id)
@@ -40,12 +67,15 @@ public class StudentService {
   }
 
   @Transactional(readOnly = true)
+
   public Student getStudentByStudentId(String studentId) {
     return studentRepository.findByMatriculationId(studentId)
         .orElseThrow(() -> new NotFoundException(
             "Student with matriculation number " + studentId + " not found"
+
         ));
   }
+
 
   public Student createStudent(Student student) {
     if (studentRepository.existsByMatriculationId(student.getMatriculationId())) {
@@ -60,6 +90,7 @@ public class StudentService {
     }
     return studentRepository.save(student);
   }
+
 
   public Student updateStudent(Student student) {
     if (student.getId() == null) {
@@ -85,24 +116,90 @@ public class StudentService {
 
   @Transactional(readOnly = true)
   public List<Student> getStudentsByStudyGroup(String studyGroup) {
-    return studentRepository.findByStudyGroup(studyGroup);
+    List<GroupDto> groups = fetchAllGroups();
+    if (groups == null || groups.isEmpty()) {
+
+      throw new IllegalStateException("Externe Gruppen-API lieferte keine Gruppen zurück");
+    }
+
+    GroupDto group = groups.stream()
+        .filter(g -> g.getName() != null && g.getName().equalsIgnoreCase(studyGroup))
+        .findFirst()
+
+        .orElseThrow(() -> new NotFoundException("Gruppe \"" + studyGroup + "\" nicht gefunden"));
+
+    if (group.getUsers() == null || group.getUsers().isEmpty()) {
+      return List.of();
+    }
+
+    List<UUID> uuids = new ArrayList<>();
+    for (GroupMemberDto m : group.getUsers()) {
+      if (m.getStudentUuid() != null && !m.getStudentUuid().isBlank()) {
+        try {
+          uuids.add(UUID.fromString(m.getStudentUuid()));
+        } catch (IllegalArgumentException ex) {
+        }
+      }
+    }
+
+    List<String> matriculationIds = group.getUsers().stream()
+        .map(GroupMemberDto::getMatriculationId)
+        .filter(s -> s != null && !s.isBlank())
+
+        .toList();
+
+    List<String> emails = group.getUsers().stream()
+        .map(GroupMemberDto::getEmail)
+        .filter(s -> s != null && !s.isBlank())
+        .toList();
+
+    List<Student> byUuid = uuids.isEmpty() ? List.of() : studentRepository.findByIdIn(uuids);
+
+    Set<UUID> alreadyFoundIds = byUuid.stream()
+        .map(Student::getId)
+        .collect(Collectors.toCollection(HashSet::new));
+
+
+    List<Student> byMatric = matriculationIds.isEmpty()
+        ? List.of()
+        : studentRepository.findByMatriculationIdIn(matriculationIds);
+
+    List<Student> remainingFromMatric = byMatric.stream()
+        .filter(s -> !alreadyFoundIds.contains(s.getId()))
+        .toList();
+    alreadyFoundIds.addAll(remainingFromMatric.stream().map(Student::getId).toList());
+
+    List<Student> byEmail = emails.isEmpty()
+        ? List.of()
+        : studentRepository.findByEmailIn(emails);
+    List<Student> remainingFromEmail = byEmail.stream()
+        .filter(s -> !alreadyFoundIds.contains(s.getId()))
+        .toList();
+
+    return List.of(
+
+        byUuid,
+        remainingFromMatric,
+        remainingFromEmail
+    ).stream().flatMap(List::stream).toList();
   }
 
   @Transactional
+
   public void addStudentToExam(String studentId, String examId) {
-    // leichte Optimierung: getReference vermeidet unnötige SELECTs
-    Student student = em.getReference(Student.class, studentId);
-    Exam exam = em.getReference(Exam.class, examId);
+    Student student = em.getReference(Student.class, UUID.fromString(studentId));
+    Exam exam = em.getReference(Exam.class, UUID.fromString(examId));
     student.addExam(exam);
     studentRepository.save(student);
+
   }
 
   @Transactional
   public void removeStudentFromExam(String studentId, String examId) {
-    Student student = em.getReference(Student.class, studentId);
-    Exam exam = em.getReference(Exam.class, examId);
-
+    Student student = em.getReference(Student.class, UUID.fromString(studentId));
+    Exam exam = em.getReference(Exam.class, UUID.fromString(examId));
     student.removeExam(exam);
+
     studentRepository.save(student);
   }
 
@@ -117,7 +214,20 @@ public class StudentService {
         .orElseThrow(() -> new NotFoundException("Student not found"));
 
     return student.getExams().stream()
+
         .map(ExamService::toResponse)
         .toList();
+
+  }
+
+  private List<GroupDto> fetchAllGroups() {
+    return groupWebClient.get()
+        .uri(groupServiceBaseUrl + getAllGroupsPath)
+        .retrieve()
+        .bodyToFlux(GroupDto.class)
+        .collectList()
+        .block();
+
   }
 }
+
