@@ -89,8 +89,7 @@ public class StudentService {
   }
 
   @Transactional
-  public void addStudentToExam(String studentId, String examId) {
-    // leichte Optimierung: getReference vermeidet unnötige SELECTs
+  public void addStudentToExam(UUID studentId, UUID examId) {
     Student student = em.getReference(Student.class, studentId);
     Exam exam = em.getReference(Exam.class, examId);
     student.addExam(exam);
@@ -98,10 +97,9 @@ public class StudentService {
   }
 
   @Transactional
-  public void removeStudentFromExam(String studentId, String examId) {
+  public void removeStudentFromExam(UUID studentId, UUID examId) {
     Student student = em.getReference(Student.class, studentId);
     Exam exam = em.getReference(Exam.class, examId);
-
     student.removeExam(exam);
     studentRepository.save(student);
   }
