@@ -25,7 +25,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(onlyExplicitlyIncluded = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Student {
 

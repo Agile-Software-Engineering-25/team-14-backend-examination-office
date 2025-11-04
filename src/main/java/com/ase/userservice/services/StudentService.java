@@ -1,7 +1,8 @@
 package com.ase.userservice.services;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
+import com.ase.userservice.dto.ExternalStudentDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
@@ -19,18 +20,42 @@ public class StudentService {
   private final StudentRepository studentRepository;
   private final ExamRepository examRepository;
   private final EntityManager em;
+  private final ExternalStudentService externalStudentService;
 
   public StudentService(StudentRepository studentRepository,
                         ExamRepository examRepository,
-                        EntityManager em) {
+                        EntityManager em,
+                        ExternalStudentService externalStudentService) {
     this.studentRepository = studentRepository;
     this.examRepository = examRepository;
     this.em = em;
+    this.externalStudentService = externalStudentService;
   }
 
   @Transactional(readOnly = true)
   public List<Student> getAllStudents() {
-    return studentRepository.findAll();
+    List<Student> internal = studentRepository.findAll();
+
+    List<ExternalStudentDto> externalDtos = externalStudentService.getAllExternalStudents();
+
+    List<Student> external = externalDtos.stream()
+        .map(e -> {
+          Student s = new Student();
+          try {
+            s.setId(UUID.fromString(e.getUuid()));
+          } catch (Exception ex) {
+            s.setId(null);
+          }
+          s.setFirstName(e.getFirstName());
+          s.setLastName(e.getLastName());
+          s.setEmail(e.getEmail());
+          s.setMatriculationId(e.getMatriculationNumber());
+          s.setSemester(e.getSemester());
+          return s;
+        })
+        .toList();
+
+    return Stream.concat(internal.stream(), external.stream()).toList();
   }
 
   @Transactional(readOnly = true)
@@ -88,12 +113,36 @@ public class StudentService {
     return studentRepository.findByStudyGroup(studyGroup);
   }
 
-  @Transactional
   public void addStudentToExam(UUID studentId, UUID examId) {
-    Student student = em.getReference(Student.class, studentId);
-    Exam exam = em.getReference(Exam.class, examId);
-    student.addExam(exam);
-    studentRepository.save(student);
+      Student student = studentRepository.findById(studentId).orElseGet(() -> {
+          ExternalStudentDto external = externalStudentService.getAllExternalStudents().stream()
+              .filter(e -> e.getUuid() != null && e.getUuid().equals(studentId.toString()))
+              .findFirst()
+              .orElse(null);
+
+          Student s = new Student();
+          s.setId(studentId);
+          if (external != null) {
+              s.setFirstName(external.getFirstName());
+              s.setLastName(external.getLastName());
+              s.setEmail(external.getEmail());
+              s.setMatriculationId(external.getMatriculationNumber());
+              s.setSemester(external.getSemester());
+          } else {
+              s.setFirstName("Extern");
+              s.setLastName(studentId.toString().substring(0, 8));
+              s.setEmail(studentId + "@external.fake");
+              s.setMatriculationId("ext-" + studentId.toString().substring(0, 8));
+          }
+        em.persist(s);
+        em.flush();
+        return s;
+      });
+
+      Exam exam = em.getReference(Exam.class, examId);
+      student.addExam(exam);
+    em.merge(student);
+    em.flush();
   }
 
   @Transactional
@@ -117,5 +166,9 @@ public class StudentService {
     return student.getExams().stream()
         .map(ExamService::toResponse)
         .toList();
+  }
+
+  public List<String> getAllExternalGroupNames() {
+    return externalStudentService.getAllGroupNames();
   }
 }

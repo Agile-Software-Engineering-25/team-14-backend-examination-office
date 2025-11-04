@@ -233,4 +233,10 @@ public class StudentController {
               .getBytes());
     }
   }
+
+  @GetMapping("/external/groups")
+  public ResponseEntity<List<String>> getExternalGroupNames() {
+    List<String> groupNames = studentService.getAllExternalGroupNames();
+    return ResponseEntity.ok(groupNames);
+  }
 }
