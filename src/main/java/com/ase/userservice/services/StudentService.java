@@ -47,6 +47,31 @@ public class StudentService {
     return groupResponse.getGroups();
   }
 
+  public List<GroupDto> getStudyGroupsForExam(String examUuid) {
+    GroupResponseDto groupResponse = externalStudentWebClient.get()
+        .uri(externalStudentServiceBaseUrl + "/group")
+        .retrieve()
+        .bodyToMono(GroupResponseDto.class)
+        .block();
+
+    if (groupResponse == null) {
+      return List.of();
+    }
+
+    List<GroupDto> groups = groupResponse.getGroups();
+    for (GroupDto group : groups) {
+      if (group.getStudents() != null) {
+        for (StudentDto student : group.getStudents()) {
+          student.setEnlisted(studentExamRepository.findById(
+              new StudentExamId(student.getUuid(), examUuid)).isPresent()
+          );
+        }
+      }
+    }
+
+    return groups;
+  }
+
   public List<StudentDto> getStudentsByStudyGroup(String studyGroup) {
     GroupDto group = externalStudentWebClient.get()
         .uri(externalStudentServiceBaseUrl + "/group/" + studyGroup)

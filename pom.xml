@@ -96,7 +96,6 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
-
         <!-- Other Microservice APIs -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

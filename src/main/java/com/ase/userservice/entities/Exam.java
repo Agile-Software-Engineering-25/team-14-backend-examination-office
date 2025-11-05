@@ -122,6 +122,36 @@ public class Exam {
     this.weightPerCent = weightPerCent;
   }
 
+  public Exam(String id,
+              String title,
+              String moduleCode,
+              LocalDateTime examDate,
+              String room,
+              ExamType examType,
+              String semester,
+              Integer ects,
+              Integer maxPoints,
+              Integer duration,
+              Integer attemptNumber,
+              boolean fileUploadRequired,
+              List<String> tools,
+              Integer weightPerCent) {
+    this.id = id;
+    this.title = title;
+    this.moduleCode = moduleCode;
+    this.examDate = examDate;
+    this.room = room;
+    this.examType = examType;
+    this.semester = semester;
+    this.ects = ects;
+    this.maxPoints = maxPoints;
+    this.duration = duration;
+    this.attemptNumber = attemptNumber;
+    this.fileUploadRequired = fileUploadRequired;
+    this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
+    this.weightPerCent = weightPerCent;
+  }
+
   public void addStudent(String studentUuid) {
     if (studentUuid == null) {
       return;

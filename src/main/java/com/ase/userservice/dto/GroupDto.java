@@ -17,4 +17,6 @@ public class GroupDto {
 
   @JsonProperty("students")
   private List<StudentDto> students;
+
+
 }

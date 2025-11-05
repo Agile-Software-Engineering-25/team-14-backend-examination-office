@@ -1,5 +1,6 @@
 package com.ase.userservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
@@ -17,4 +18,7 @@ public class StudentDto {
   private String address;
   private String phoneNumber;
   private String dateOfBirth;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Boolean enlisted;
 }

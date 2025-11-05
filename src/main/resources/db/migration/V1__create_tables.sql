@@ -24,7 +24,7 @@ CREATE TABLE exam_tools (
                             CONSTRAINT fk_exam_tools_exam FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
 );
 
--- 1. Create student_exams join table
+-- Create student_exams join table
 CREATE TABLE student_exams (
                                student_id VARCHAR(160) NOT NULL,
                                exam_id VARCHAR(160) NOT NULL,

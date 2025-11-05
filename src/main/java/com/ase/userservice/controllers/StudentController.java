@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.ase.userservice.dto.GroupDto;
 import com.ase.userservice.dto.StudentDto;
@@ -63,9 +64,19 @@ public class StudentController {
   }
 
   @GetMapping("/groups")
-  public ResponseEntity<List<GroupDto>> getStudentGroups() {
-    return ResponseEntity.ok(studentService.getStudyGroups());
+  public ResponseEntity<List<GroupDto>> getStudentGroups(
+      @RequestParam(value = "examUuid", required = false) String examUuid) {
+
+    List<GroupDto> groups;
+    if (examUuid != null) {
+      groups = studentService.getStudyGroupsForExam(examUuid);
+    } else {
+      groups = studentService.getStudyGroups();
+    }
+
+    return ResponseEntity.ok(groups);
   }
+
 
   @DeleteMapping("/{studentId}/exams/{examId}")
   public ResponseEntity<String> removeStudentFromExam(
