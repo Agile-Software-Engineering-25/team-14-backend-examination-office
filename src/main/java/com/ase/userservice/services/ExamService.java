@@ -2,7 +2,6 @@ package com.ase.userservice.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ase.userservice.controllers.NotFoundException;
@@ -48,7 +47,7 @@ public class ExamService {
   }
 
   public ExamResponse update(String id, CreateExamRequest req) {
-    Exam exam = repo.findById(UUID.fromString(id))
+    Exam exam = repo.findById(id)
         .orElseThrow(() -> new NotFoundException("Exam " + id + " not found"));
 
     checkDuplicate(req.moduleCode(), req.examDate(), req.attemptNumber(), id);
@@ -60,7 +59,7 @@ public class ExamService {
 
   @Transactional(readOnly = true)
   public ExamResponse get(String id) {
-    Optional<Exam> e = repo.findById(UUID.fromString(id));
+    Optional<Exam> e = repo.findById(id);
     if (e.isEmpty()) {
       throw new NotFoundException("Exam " + id + " not found");
     }
@@ -98,10 +97,10 @@ public class ExamService {
   }
 
   public void delete(String id) {
-    if (!repo.existsById(UUID.fromString(id))) {
+    if (!repo.existsById(id)) {
       throw new NotFoundException("Exam " + id + " not found");
     }
-    repo.deleteById(UUID.fromString(id));
+    repo.deleteById(id);
   }
 
   private void checkDuplicate(String moduleCode,
@@ -117,7 +116,7 @@ public class ExamService {
         moduleCode,
         examDate,
         attemptNumber,
-        UUID.fromString(excludeId));
+        excludeId);
 
     if (exists) {
       throw new IllegalStateException(
@@ -131,7 +130,7 @@ public class ExamService {
 
   public static ExamResponse toResponse(Exam e, Integer submissionCount) {
     return new ExamResponse(
-        e.getId().toString(),
+        e.getId(),
         e.getTitle(),
         e.getModuleCode(),
         e.getExamDate(),
