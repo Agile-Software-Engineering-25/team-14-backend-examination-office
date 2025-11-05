@@ -70,7 +70,8 @@ public class StudentController {
     List<GroupDto> groups;
     if (examUuid != null) {
       groups = studentService.getStudyGroupsForExam(examUuid);
-    } else {
+    }
+    else {
       groups = studentService.getStudyGroups();
     }
 
