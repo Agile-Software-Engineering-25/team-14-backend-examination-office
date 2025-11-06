@@ -35,7 +35,7 @@ public class StudentService {
 
   public List<GroupDto> getStudyGroups() {
     GroupResponseDto groupResponse = externalStudentWebClient.get()
-        .uri(externalStudentServiceBaseUrl + "/group")
+        .uri(externalStudentServiceBaseUrl + "/group?withDetails=true")
         .retrieve()
         .bodyToMono(GroupResponseDto.class)
         .block();
@@ -48,17 +48,7 @@ public class StudentService {
   }
 
   public List<GroupDto> getStudyGroupsForExam(String examUuid) {
-    GroupResponseDto groupResponse = externalStudentWebClient.get()
-        .uri(externalStudentServiceBaseUrl + "/group")
-        .retrieve()
-        .bodyToMono(GroupResponseDto.class)
-        .block();
-
-    if (groupResponse == null) {
-      return List.of();
-    }
-
-    List<GroupDto> groups = groupResponse.getGroups();
+    List<GroupDto> groups = getStudyGroups();
     for (GroupDto group : groups) {
       if (group.getStudents() != null) {
         for (StudentDto student : group.getStudents()) {
@@ -134,7 +124,7 @@ public class StudentService {
 
   public StudentDto getStudentInfo(String studentId) {
     return externalStudentWebClient.get()
-        .uri(externalStudentServiceBaseUrl + "/users/" + studentId)
+        .uri(externalStudentServiceBaseUrl + "/users/" + studentId + "?withDetails=true")
         .retrieve()
         .bodyToMono(StudentDto.class)
         .block();
