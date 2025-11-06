@@ -2,21 +2,19 @@ package com.ase.userservice.repositories;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.ase.userservice.entities.Exam;
 
 @Repository
-public interface ExamRepository extends JpaRepository<Exam, UUID> {
-
+public interface ExamRepository extends JpaRepository<Exam, String> {
   boolean existsByModuleCodeAndExamDateAndAttemptNumber(
       String moduleCode,
       LocalDateTime examDate,
       Integer attemptNumber);
 
   boolean existsByModuleCodeAndExamDateAndAttemptNumberAndIdNot(
-      String moduleCode, LocalDateTime examDate, Integer attemptNumber, UUID id);
+      String moduleCode, LocalDateTime examDate, Integer attemptNumber, String id);
 
   List<Exam> findAllByModuleCode(String moduleCode);
 }

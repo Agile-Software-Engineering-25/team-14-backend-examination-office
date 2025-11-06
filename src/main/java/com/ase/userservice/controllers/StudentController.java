@@ -2,7 +2,6 @@ package com.ase.userservice.controllers;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,18 +12,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.ase.userservice.dto.CreateStudentRequest;
-import com.ase.userservice.dto.StudentResponse;
-import com.ase.userservice.entities.Student;
+import com.ase.userservice.dto.GroupDto;
+import com.ase.userservice.dto.StudentDto;
 import com.ase.userservice.services.CertificateService;
 import com.ase.userservice.services.StudentService;
-import jakarta.validation.Valid;
 
 @CrossOrigin(
     origins = "http://localhost:5173",
@@ -52,130 +47,63 @@ public class StudentController {
   @Autowired
   private CertificateService certificateService;
 
-  @GetMapping
-  public ResponseEntity<List<StudentResponse>> getAllStudents() {
-    List<StudentResponse> response = studentService
-        .getAllStudents()
-        .stream()
-        .map(StudentResponse::from)
-        .toList();
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<StudentResponse> getStudentById(@PathVariable String id) {
-    Student student = studentService.getStudentById(UUID.fromString(id));
-    return ResponseEntity.ok(StudentResponse.from(student));
-  }
-
-  @GetMapping("/studentId/{studentId}")
-  public ResponseEntity<StudentResponse> getStudentByStudentId(@PathVariable String studentId) {
-    Student student = studentService.getStudentByStudentId(studentId);
-    return ResponseEntity.ok(StudentResponse.from(student));
-  }
-
-  @PostMapping
-  public ResponseEntity<StudentResponse> createStudent(
-      @Valid @RequestBody CreateStudentRequest request
-  ) {
-    Student student = new Student(
-        request.getStudentId(),
-        request.getFirstName(),
-        request.getLastName(),
-        request.getEmail(),
-        request.getStudyGroup(),
-        request.getSemester()
-    );
-
-    Student saved = studentService.createStudent(student);
-    return ResponseEntity.status(HttpStatus.CREATED).body(StudentResponse.from(saved));
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<StudentResponse> updateStudent(
-      @PathVariable String id,
-      @Valid @RequestBody CreateStudentRequest request) {
-    Student existing = studentService.getStudentById(UUID.fromString(id));
-    existing.updateFrom(new Student(
-        request.getStudentId(),
-        request.getFirstName(),
-        request.getLastName(),
-        request.getEmail(),
-        request.getStudyGroup(),
-        request.getSemester()
-    ));
-    Student updated = studentService.updateStudent(existing);
-    return ResponseEntity.ok(StudentResponse.from(updated));
-  }
-
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteStudent(@PathVariable String id) {
-    studentService.deleteStudent(id);
-    return ResponseEntity.noContent().build();
-  }
-
-  @GetMapping("/search")
-  public ResponseEntity<List<StudentResponse>> searchStudents(@RequestParam String q) {
-    List<StudentResponse> response = studentService
-        .searchStudentsByName(q)
-        .stream()
-        .map(StudentResponse::from)
-        .toList();
-
-    return ResponseEntity.ok(response);
-  }
-
   @GetMapping("/study-group/{studyGroup}")
-  public ResponseEntity<List<StudentResponse>> getStudentsByStudyGroup(
+  public ResponseEntity<List<StudentDto>> getStudentsByStudyGroup(
       @PathVariable String studyGroup
   ) {
-    List<StudentResponse> response = studentService
-        .getStudentsByStudyGroup(studyGroup)
-        .stream()
-        .map(StudentResponse::from)
-        .toList();
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(studentService.getStudentsByStudyGroup(studyGroup));
   }
 
   @PostMapping("/{studentId}/exams/{examId}")
   public ResponseEntity<String> addStudentToExam(
-      @PathVariable UUID studentId,
-      @PathVariable UUID examId
+      @PathVariable String studentId,
+      @PathVariable String examId
   ) {
     studentService.addStudentToExam(studentId, examId);
     return ResponseEntity.ok("Student erfolgreich zur Prüfung hinzugefügt");
   }
 
+  @GetMapping("/groups")
+  public ResponseEntity<List<GroupDto>> getStudentGroups(
+      @RequestParam(value = "examUuid", required = false) String examUuid) {
+
+    List<GroupDto> groups;
+    if (examUuid != null) {
+      groups = studentService.getStudyGroupsForExam(examUuid);
+    }
+    else {
+      groups = studentService.getStudyGroups();
+    }
+
+    return ResponseEntity.ok(groups);
+  }
+
+
   @DeleteMapping("/{studentId}/exams/{examId}")
   public ResponseEntity<String> removeStudentFromExam(
-      @PathVariable UUID studentId,
-      @PathVariable UUID examId
+      @PathVariable String studentId,
+      @PathVariable String examId
   ) {
     studentService.removeStudentFromExam(studentId, examId);
     return ResponseEntity.ok("Student erfolgreich von der Prüfung entfernt");
   }
 
   @GetMapping("/exam/{examId}")
-  public ResponseEntity<List<StudentResponse>> getStudentsByExamId(@PathVariable String examId) {
-    List<StudentResponse> response = studentService
-        .getStudentsByExamId(examId)
-        .stream()
-        .map(StudentResponse::from)
-        .toList();
+  public ResponseEntity<List<String>> getStudentsByExamId(@PathVariable String examId) {
+    List<String> response = studentService
+        .getStudentIdsByExamId(examId);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}/certificate")
   public ResponseEntity<byte[]> generateCertificate(@PathVariable String id) {
-
-    Student student = studentService.getStudentById(UUID.fromString(id));
+    StudentDto student = studentService.getStudentInfo(id);
     if (student == null) {
       throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
     }
 
-    String studyGroup = student.getStudyGroup();
+    String studyGroup = student.getCohort();
     String degreeType = "Bachelor";
 
     if (studyGroup != null && !studyGroup.isEmpty()) {
@@ -209,7 +137,7 @@ public class StudentController {
   public ResponseEntity<byte[]> generateCertificatesForStudyGroup(
       @PathVariable String studyGroup) {
 
-    List<Student> students = studentService.getStudentsByStudyGroup(studyGroup);
+    List<StudentDto> students = studentService.getStudentsByStudyGroup(studyGroup);
     if (students.isEmpty()) {
       return ResponseEntity.notFound().build();
     }

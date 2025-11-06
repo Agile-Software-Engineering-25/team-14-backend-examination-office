@@ -1,12 +1,3 @@
--- Insert Students
-INSERT INTO students (id, matriculation_id, first_name, last_name, email, study_group, semester, date_of_birth)
-VALUES
-    ('d1c27c4f-e7d7-45b8-bc4e-6f634e7c5e8f', 'D725', 'John', 'Doe', 'john.doe@uni.com', 'CS-01', 3, '2000-01-15'),
-    ('f2a26e3f-3b50-44ac-a7f9-02fe3b41cf6a', 'D755', 'Jane', 'Smith', 'jane.smith@uni.com', 'CS-01', 3, '2000-02-20'),
-    ('7283a092-2b64-4bfa-bf92-4242448b740a', 'D735', 'Alice', 'Johnson', 'alice.j@uni.com', 'CS-02', 5, '1999-11-30'),
-    ('a9f5d8b5-2632-42b5-8520-1db4010fc80d', 'D729', 'Bob', 'Wilson', 'bob.w@uni.com', 'CS-02', 5, '1998-05-10'),
-    ('be7f4234-cd28-4b29-9b09-5d1a38d3c67a', 'D726', 'Charlie', 'Brown', 'charlie.b@uni.com', 'CS-03', 1, '2001-08-25');
-
 INSERT INTO exams (
     id, title, module_code, exam_date, room, exam_type, semester, ects, max_points, duration, attempt_number, file_upload_required, weight_per_cent
 ) VALUES

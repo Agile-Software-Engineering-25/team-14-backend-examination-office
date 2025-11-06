@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import com.ase.userservice.dto.CreateExamRequest;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -44,7 +43,7 @@ public class Exam {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  private String id;
 
   @Column(nullable = false, length = 160)
   private String title;
@@ -123,28 +122,58 @@ public class Exam {
     this.weightPerCent = weightPerCent;
   }
 
-  public void addStudent(Student student) {
-    if (student == null) {
-      return;
-    }
-    if (getStudentExam(student) != null) {
-      return;
-    }
-
-    StudentExam studentExam = new StudentExam();
-    studentExam.setStudent(student);
-    studentExam.setExam(this);
-    studentExam.setId(new StudentExamId(student.getId(), this.getId()));
-
-    this.getStudentExams().add(studentExam);
-    student.getStudentExams().add(studentExam);
+  public Exam(String id,
+              String title,
+              String moduleCode,
+              LocalDateTime examDate,
+              String room,
+              ExamType examType,
+              String semester,
+              Integer ects,
+              Integer maxPoints,
+              Integer duration,
+              Integer attemptNumber,
+              boolean fileUploadRequired,
+              List<String> tools,
+              Integer weightPerCent) {
+    this.id = id;
+    this.title = title;
+    this.moduleCode = moduleCode;
+    this.examDate = examDate;
+    this.room = room;
+    this.examType = examType;
+    this.semester = semester;
+    this.ects = ects;
+    this.maxPoints = maxPoints;
+    this.duration = duration;
+    this.attemptNumber = attemptNumber;
+    this.fileUploadRequired = fileUploadRequired;
+    this.tools = tools != null ? new ArrayList<>(tools) : new ArrayList<>();
+    this.weightPerCent = weightPerCent;
   }
 
-  public void removeStudent(Student student) {
-    if (student != null) {
+  public void addStudent(String studentUuid) {
+    if (studentUuid == null) {
+      return;
+    }
+    if (getStudentExam(studentUuid) != null) {
+      return;
+    }
+
+    StudentExam studentExam = new StudentExam(
+        new StudentExamId(studentUuid, this.getId()),
+        this,
+        ExamState.EXAM_OPEN
+    );
+
+    this.getStudentExams().add(studentExam);
+  }
+
+  public void removeStudent(String studentUuid) {
+    if (studentUuid != null) {
       studentExams.removeIf(studentExam -> {
-        if (studentExam.getStudent().equals(student)) {
-          student.getStudentExams().remove(studentExam);
+        if (studentExam.getStudentUuid().equals(studentUuid)) {
+          this.getStudentExams().remove(studentExam);
           return true;
         }
         return false;
@@ -152,15 +181,15 @@ public class Exam {
     }
   }
 
-  public Set<Student> getStudents() {
+  public Set<String> getStudentUuids() {
     return studentExams.stream()
-        .map(StudentExam::getStudent)
+        .map(StudentExam::getStudentUuid)
         .collect(java.util.stream.Collectors.toSet());
   }
 
-  public StudentExam getStudentExam(Student student) {
+  public StudentExam getStudentExam(String studentUuid) {
     return studentExams.stream()
-        .filter(studentExam -> studentExam.getStudent().equals(student))
+        .filter(studentExam -> studentExam.getStudentUuid().equals(studentUuid))
         .findFirst()
         .orElse(null);
   }

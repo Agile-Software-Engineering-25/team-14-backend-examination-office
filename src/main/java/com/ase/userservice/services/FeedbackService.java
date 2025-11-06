@@ -1,7 +1,6 @@
 package com.ase.userservice.services;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,12 +10,10 @@ import com.ase.userservice.dto.FeedbackDto;
 import com.ase.userservice.dto.StudentExamStateDto;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.ExamState;
-import com.ase.userservice.entities.Student;
 import com.ase.userservice.entities.StudentExam;
 import com.ase.userservice.entities.StudentExamId;
 import com.ase.userservice.repositories.ExamRepository;
 import com.ase.userservice.repositories.StudentExamRepository;
-import com.ase.userservice.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class FeedbackService {
 
   private final StudentExamRepository studentExamRepository;
-  private final StudentRepository studentRepository;
   private final ExamRepository examRepository;
   private final BitfrostService bitfrostService;
 
@@ -50,12 +46,12 @@ public class FeedbackService {
   public List<FeedbackDto> getFeedbackForExam(String examUuid) {
     List<FeedbackDto> feedbacks = executeApiCall("/feedback/for-exam/" + examUuid);
 
-    Exam exam = examRepository.findById(UUID.fromString(examUuid))
+    Exam exam = examRepository.findById(examUuid)
         .orElseThrow(() -> new IllegalArgumentException("Exam not found: " + examUuid));
 
     return feedbacks.stream()
         .peek(fb -> {
-          StudentExamId id = new StudentExamId(UUID.fromString(fb.getStudentUuid()), exam.getId());
+          StudentExamId id = new StudentExamId(fb.getStudentUuid(), exam.getId());
           StudentExam studentExam = studentExamRepository.findById(id).orElse(null);
           if (studentExam != null) {
             fb.setState(studentExam.getState());
@@ -94,20 +90,15 @@ public class FeedbackService {
   }
 
   public void setStudentExamState(String examUuid, String studentUuid, ExamState newState) {
-    Student student = studentRepository.findById(UUID.fromString(studentUuid))
-        .orElseThrow(() -> new IllegalArgumentException(
-            "Student not found: " + studentUuid
-        ));
-
-    Exam exam = examRepository.findById(UUID.fromString(examUuid))
+    Exam exam = examRepository.findById(examUuid)
         .orElseThrow(() -> new IllegalArgumentException(
             "Exam not found: " + examUuid
         ));
 
-    StudentExamId studentExamId = new StudentExamId(student.getId(), exam.getId());
+    StudentExamId studentExamId = new StudentExamId(studentUuid, exam.getId());
     StudentExam studentExam = studentExamRepository.findById(studentExamId)
         .orElseThrow(() -> new IllegalArgumentException(
-            "StudentExam not found for student " + student.getId()
+            "StudentExam not found for student " + studentUuid
                 + " and exam " + exam.getId()
         ));
 
@@ -117,18 +108,13 @@ public class FeedbackService {
 
   @Transactional(readOnly = true)
   public StudentExamStateDto getStudentExamStatus(String examId, String studentId) {
-    Student student = studentRepository.findById(UUID.fromString(studentId))
-        .orElseThrow(() -> new IllegalArgumentException(
-            "Student not found: " + studentId
-        ));
-
-    Exam exam = examRepository.findById(UUID.fromString(examId))
+    Exam exam = examRepository.findById(examId)
         .orElseThrow(() -> new IllegalArgumentException(
             "Exam not found: " + examId
         ));
 
     StudentExam studentExam = studentExamRepository.findById(new StudentExamId(
-            student.getId(),
+            studentId,
             exam.getId()
         ))
         .orElseThrow(() -> new IllegalArgumentException(
@@ -136,8 +122,8 @@ public class FeedbackService {
         ));
 
     return StudentExamStateDto.builder()
-        .studentUuid(student.getId().toString())
-        .examUuid(exam.getId().toString())
+        .studentUuid(studentId)
+        .examUuid(exam.getId())
         .state(studentExam.getState())
         .build();
   }

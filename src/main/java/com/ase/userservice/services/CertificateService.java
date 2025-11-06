@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-import com.ase.userservice.entities.Student;
+import com.ase.userservice.dto.StudentDto;
 
 @Service
 public class CertificateService {
@@ -25,9 +25,10 @@ public class CertificateService {
   @Autowired
   private TemplateEngine templateEngine;
 
-  public byte[] generateCertificate(Student student, String degreeType) throws IOException {
-    System.out.println("Generiere " + degreeType + "-Zeugnis für Student: " + student.getFullName()
-        + " (Studiengruppe: " + student.getStudyGroup() + ")");
+  public byte[] generateCertificate(StudentDto student, String degreeType) throws IOException {
+    System.out.println("Generiere " + degreeType + "-Zeugnis für Student: "
+        + student.getFirstName() + " " + student.getLastName()
+        + " (Studiengruppe: " + student.getCohort() + ")");
 
     String templateName = degreeType.equalsIgnoreCase("Master")
         ? "master_certificate" : "bachelor_certificate";
@@ -39,19 +40,20 @@ public class CertificateService {
     return generatePdfFromHtml(html);
   }
 
-  public byte[] generateCertificates(List<Student> students) throws IOException {
+  public byte[] generateCertificates(List<StudentDto> students) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (ZipOutputStream zos = new ZipOutputStream(baos)) {
 
-      for (Student student : students) {
-        String degreeType = student.getStudyGroup() != null
+      for (StudentDto student : students) {
+        String degreeType = student.getCohort() != null
             &&
-            student.getStudyGroup().toUpperCase().startsWith("M") ? "Master" : "Bachelor";
+            student.getCohort().toUpperCase().startsWith("M") ? "Master" : "Bachelor";
 
         byte[] pdfBytes = generateCertificate(student, degreeType);
         String fileName = String.format("%s_%s_Zeugnis.pdf",
-            student.getMatriculationId(),
-            student.getFullName().replace(" ", "_"));
+            student.getMatriculationNumber(),
+            (student.getFirstName() + " " + student.getLastName())
+                .replace(" ", "_"));
 
         // Füge das PDF zur ZIP-Datei hinzu
         ZipEntry entry = new ZipEntry(fileName);
@@ -64,20 +66,20 @@ public class CertificateService {
     return baos.toByteArray();
   }
 
-  private Context createCertificateContext(Student student) {
+  private Context createCertificateContext(StudentDto student) {
     Context context = new Context();
 
     context.setVariable("universityName", UNIVERSITY_NAME);
     context.setVariable("location", LOCATION);
 
-    context.setVariable("studentName", student.getFullName());
-    context.setVariable("studentId", student.getMatriculationId());
+    context.setVariable("studentName", student.getFirstName() + " " + student.getLastName());
+    context.setVariable("studentId", student.getMatriculationNumber());
 
-    String translatedProgram = translateStudyProgram(student.getStudyGroup());
+    String translatedProgram = translateStudyProgram(student.getCohort());
     context.setVariable("studyProgram", translatedProgram);
 
     String formattedBirthDate = formatDateOrDefault(
-        student.getDateOfBirth(),
+        LocalDate.parse(student.getDateOfBirth()),
         "--.--.----"
     );
     context.setVariable("dateOfBirth", formattedBirthDate);
