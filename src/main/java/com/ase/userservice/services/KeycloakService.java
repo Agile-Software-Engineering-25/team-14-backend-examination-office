@@ -38,7 +38,6 @@ public class KeycloakService {
 
   public String getToken() {
     AuthTokenResponseDto tokenResponse = executeApiCall("/token");
-    System.out.println(String.format("%s %s", tokenResponse.getTokenType(), tokenResponse.getAccessToken()));
     return String.format("%s %s", tokenResponse.getTokenType(), tokenResponse.getAccessToken());
   }
 }
