@@ -26,16 +26,20 @@ public class StudentService {
   private final WebClient externalStudentWebClient = WebClient.create();
   private final ExamRepository examRepository;
   private final StudentExamRepository studentExamRepository;
+  private final KeycloakService keycloakService;
 
   public StudentService(ExamRepository examRepository,
-                        StudentExamRepository studentExamRepository) {
+                        StudentExamRepository studentExamRepository,
+                        KeycloakService keycloakService) {
     this.examRepository = examRepository;
     this.studentExamRepository = studentExamRepository;
+    this.keycloakService = keycloakService;
   }
 
   public List<GroupDto> getStudyGroups() {
     GroupResponseDto groupResponse = externalStudentWebClient.get()
         .uri(externalStudentServiceBaseUrl + "/group?withDetails=true")
+        .header("Authorization", keycloakService.getToken())
         .retrieve()
         .bodyToMono(GroupResponseDto.class)
         .block();
@@ -65,6 +69,7 @@ public class StudentService {
   public List<StudentDto> getStudentsByStudyGroup(String studyGroup) {
     GroupDto group = externalStudentWebClient.get()
         .uri(externalStudentServiceBaseUrl + "/group/" + studyGroup)
+        .header("Authorization", keycloakService.getToken())
         .retrieve()
         .bodyToMono(GroupDto.class)
         .block();
@@ -125,6 +130,7 @@ public class StudentService {
   public StudentDto getStudentInfo(String studentId) {
     return externalStudentWebClient.get()
         .uri(externalStudentServiceBaseUrl + "/users/" + studentId + "?withDetails=true")
+        .header("Authorization", keycloakService.getToken())
         .retrieve()
         .bodyToMono(StudentDto.class)
         .block();

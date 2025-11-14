@@ -40,3 +40,7 @@ app:
       baseurl: https://sau-portal.de/exa-grad/grading-service/api/v1
     student-service:
       baseurl: https://sau-portal.de/team-11-api/api/v1
+    keycloak:
+      baseurl: https://keycloak.sau-portal.de/realms/sau/protocol/openid-connect
+      auth_client_id: ${KEYCLOAK_CLIENT_ID:empty}
+      auth_client_secret: ${KEYCLOAK_CLIENT_SECRET:empty}
