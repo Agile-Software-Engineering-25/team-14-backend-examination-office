@@ -28,8 +28,8 @@ public class EventController {
   private void feedbackSubmitCallback(@RequestBody FeedbackDto[] feedbacks) {
     for (FeedbackDto feedback : feedbacks) {
       feedbackService.setStudentExamState(
-          feedback.getStudentUuid(),
           feedback.getExamUuid(),
+          feedback.getStudentUuid(),
           ExamState.EXAM_GRADED
       );
     }
