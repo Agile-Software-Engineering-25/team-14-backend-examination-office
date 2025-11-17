@@ -1,12 +1,16 @@
 package com.ase.userservice.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.ase.userservice.dto.FeedbackDto;
+import com.ase.userservice.dto.PersonDetailsDto;
 import com.ase.userservice.dto.StudentExamStateDto;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.ExamState;
@@ -23,6 +27,8 @@ public class FeedbackService {
   private final StudentExamRepository studentExamRepository;
   private final ExamRepository examRepository;
   private final BitfrostService bitfrostService;
+  private final StudentService studentService;
+  private final KeycloakService keycloakService;
 
   @Value("${app.apis.feedback-service.baseurl}")
   private String feedbackServiceBaseUrl;
@@ -42,26 +48,67 @@ public class FeedbackService {
     return executeApiCall("/feedback/for-lecturer/" + lecturerUuid);
   }
 
-  @Transactional(readOnly = true)
   public List<FeedbackDto> getFeedbackForExam(String examUuid) {
     List<FeedbackDto> feedbacks = executeApiCall("/feedback/for-exam/" + examUuid);
 
     Exam exam = examRepository.findById(examUuid)
         .orElseThrow(() -> new IllegalArgumentException("Exam not found: " + examUuid));
 
+    String kcToken = keycloakService.getToken();
+    Map<String, PersonDetailsDto> userCache = new HashMap<>();
+
+    Function<String, PersonDetailsDto> loadUser = (uuid) -> {
+      if (uuid == null) return null;
+
+      return userCache.computeIfAbsent(uuid, (id) -> {
+        try {
+          return studentService.getUserInfo(id, kcToken);
+        } catch (Exception e) {
+          return null;
+        }
+      });
+    };
+
     return feedbacks.stream()
         .peek(fb -> {
           StudentExamId id = new StudentExamId(fb.getStudentUuid(), exam.getId());
           StudentExam studentExam = studentExamRepository.findById(id).orElse(null);
-          if (studentExam != null) {
-            fb.setState(studentExam.getState());
+
+          fb.setState(studentExam != null
+              ? studentExam.getState()
+              : ExamState.EXAM_GRADED);
+
+          PersonDetailsDto lecturer = loadUser.apply(fb.getLecturerUuid());
+          PersonDetailsDto student = loadUser.apply(fb.getStudentUuid());
+
+          String lecturerName;
+          if (lecturer != null) {
+            String lFirstName = lecturer.getFirstName() == null ? "John" : lecturer.getFirstName();
+            String lLastName = lecturer.getLastName() == null ? "Doe" : lecturer.getLastName();
+
+            lecturerName = (lecturer.getTitle() != null && !lecturer.getTitle().isEmpty())
+                ? lecturer.getTitle() + " " + lFirstName + " " + lLastName
+                : lFirstName + " " + lLastName;
+          } else {
+            lecturerName = "--Not Found--";
           }
-          else {
-            fb.setState(ExamState.EXAM_GRADED);
+
+          String studentName;
+          if (student != null) {
+            String sFirstName = student.getFirstName() == null ? "John" : student.getFirstName();
+            String sLastName = student.getLastName() == null ? "Doe" : student.getLastName();
+
+            studentName = sFirstName + " " + sLastName;
+          } else {
+            studentName = "--Not Found--";
           }
+
+          fb.setLecturerName(lecturerName);
+          fb.setStudentName(studentName);
         })
         .collect(Collectors.toList());
   }
+
 
   @Transactional
   public void acceptFeedback(String examUuid, String studentUuid) {

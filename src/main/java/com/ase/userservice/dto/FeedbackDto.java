@@ -3,6 +3,7 @@ package com.ase.userservice.dto;
 import java.time.LocalDate;
 import java.util.List;
 import com.ase.userservice.entities.ExamState;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +44,12 @@ public class FeedbackDto {
 
   @JsonProperty("fileReference")
   private List<FileReferenceDto> fileReference;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String lecturerName;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String studentName;
 
   @Data
   @Builder

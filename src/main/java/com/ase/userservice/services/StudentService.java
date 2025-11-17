@@ -2,6 +2,7 @@ package com.ase.userservice.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.ase.userservice.dto.PersonDetailsDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,7 @@ public class StudentService {
       if (group.getStudents() != null) {
         for (StudentDto student : group.getStudents()) {
           student.setEnlisted(studentExamRepository.findById(
-              new StudentExamId(student.getUuid(), examUuid)).isPresent()
+              new StudentExamId(student.getId(), examUuid)).isPresent()
           );
         }
       }
@@ -127,12 +128,16 @@ public class StudentService {
         .collect(Collectors.toList());
   }
 
-  public StudentDto getStudentInfo(String studentId) {
+  public PersonDetailsDto getUserInfo(String userId, String token) {
     return externalStudentWebClient.get()
-        .uri(externalStudentServiceBaseUrl + "/users/" + studentId + "?withDetails=true")
-        .header("Authorization", keycloakService.getToken())
+        .uri(externalStudentServiceBaseUrl + "/users/" + userId + "?withDetails=true")
+        .header("Authorization", token)
         .retrieve()
-        .bodyToMono(StudentDto.class)
+        .bodyToMono(PersonDetailsDto.class)
         .block();
+  }
+
+  public PersonDetailsDto getUserInfo(String userId) {
+    return getUserInfo(userId, keycloakService.getToken());
   }
 }

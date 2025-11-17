@@ -79,7 +79,7 @@ public class CertificateService {
     context.setVariable("studyProgram", translatedProgram);
 
     String formattedBirthDate = formatDateOrDefault(
-        LocalDate.parse(student.getDateOfBirth()),
+        student.getDateOfBirth(),
         "--.--.----"
     );
     context.setVariable("dateOfBirth", formattedBirthDate);
