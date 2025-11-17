@@ -2,7 +2,6 @@ package com.ase.userservice.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import com.ase.userservice.dto.PersonDetailsDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.dto.GroupDto;
 import com.ase.userservice.dto.GroupResponseDto;
+import com.ase.userservice.dto.PersonDetailsDto;
 import com.ase.userservice.dto.StudentDto;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.ExamState;
