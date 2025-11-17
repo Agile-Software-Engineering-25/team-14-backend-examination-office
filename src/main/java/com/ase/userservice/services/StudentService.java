@@ -58,7 +58,7 @@ public class StudentService {
       if (group.getStudents() != null) {
         for (StudentDto student : group.getStudents()) {
           student.setEnlisted(studentExamRepository.findById(
-              new StudentExamId(student.getId(), examUuid)).isPresent()
+              new StudentExamId(student.getUuid(), examUuid)).isPresent()
           );
         }
       }

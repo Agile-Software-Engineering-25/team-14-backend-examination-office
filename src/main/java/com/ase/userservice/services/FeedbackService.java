@@ -58,15 +58,12 @@ public class FeedbackService {
     Map<String, PersonDetailsDto> userCache = new HashMap<>();
 
     Function<String, PersonDetailsDto> loadUser = (uuid) -> {
-      if (uuid == null) {
-        return null;
-      }
+      if (uuid == null) return null;
 
       return userCache.computeIfAbsent(uuid, (id) -> {
         try {
           return studentService.getUserInfo(id, kcToken);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           return null;
         }
       });
@@ -92,8 +89,7 @@ public class FeedbackService {
             lecturerName = (lecturer.getTitle() != null && !lecturer.getTitle().isEmpty())
                 ? lecturer.getTitle() + " " + lFirstName + " " + lLastName
                 : lFirstName + " " + lLastName;
-          }
-          else {
+          } else {
             lecturerName = "--Not Found--";
           }
 
@@ -103,8 +99,7 @@ public class FeedbackService {
             String sLastName = student.getLastName() == null ? "Doe" : student.getLastName();
 
             studentName = sFirstName + " " + sLastName;
-          }
-          else {
+          } else {
             studentName = "--Not Found--";
           }
 

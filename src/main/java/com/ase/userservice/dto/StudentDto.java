@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
-public class StudentDto extends PersonDetailsDto {
+public class StudentDto extends PersonDetailsDto{
   private String uuid;
   private String matriculationNumber;
   private String degreeProgram;
