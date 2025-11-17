@@ -98,7 +98,7 @@ public class StudentController {
 
   @GetMapping("/{id}/certificate")
   public ResponseEntity<byte[]> generateCertificate(@PathVariable String id) {
-    StudentDto student = studentService.getStudentInfo(id);
+    StudentDto student = (StudentDto)studentService.getUserInfo(id);
     if (student == null) {
       throw new NotFoundException("Student mit ID " + id + " nicht gefunden");
     }

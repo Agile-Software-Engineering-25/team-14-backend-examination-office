@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.ase.userservice.dto.ExamResponse;
 import com.ase.userservice.dto.GroupDto;
 import com.ase.userservice.dto.GroupResponseDto;
+import com.ase.userservice.dto.PersonDetailsDto;
 import com.ase.userservice.dto.StudentDto;
 import com.ase.userservice.entities.Exam;
 import com.ase.userservice.entities.ExamState;
@@ -127,12 +128,16 @@ public class StudentService {
         .collect(Collectors.toList());
   }
 
-  public StudentDto getStudentInfo(String studentId) {
+  public PersonDetailsDto getUserInfo(String userId, String token) {
     return externalStudentWebClient.get()
-        .uri(externalStudentServiceBaseUrl + "/users/" + studentId + "?withDetails=true")
-        .header("Authorization", keycloakService.getToken())
+        .uri(externalStudentServiceBaseUrl + "/users/" + userId + "?withDetails=true")
+        .header("Authorization", token)
         .retrieve()
-        .bodyToMono(StudentDto.class)
+        .bodyToMono(PersonDetailsDto.class)
         .block();
+  }
+
+  public PersonDetailsDto getUserInfo(String userId) {
+    return getUserInfo(userId, keycloakService.getToken());
   }
 }
